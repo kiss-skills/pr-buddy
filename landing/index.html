@@ -6,26 +6,26 @@
   <title>pr-buddy</title>
   <style>
     :root {
-      --bg: #0f0f0f;
-      --fg: #e8e8e8;
-      --fg-muted: #888;
-      --accent: #5b8db8;
-      --accent-dim: #3a607f;
-      --border: #2a2a2a;
-      --code-bg: #1a1a1a;
+      --bg: #0a0a0a;
+      --fg: #f0f0f0;
+      --fg-muted: #666;
+      --accent: #f0f0f0;
+      --accent-dim: #333;
+      --border: #222;
+      --code-bg: #111;
       --max-width: 720px;
       --font: "Berkeley Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
     }
 
     @media (prefers-color-scheme: light) {
       :root {
-        --bg: #fafaf8;
-        --fg: #1a1a1a;
-        --fg-muted: #666;
-        --accent: #2d6a9f;
-        --accent-dim: #c8dff0;
-        --border: #e0e0e0;
-        --code-bg: #f0f0ed;
+        --bg: #ffffff;
+        --fg: #0a0a0a;
+        --fg-muted: #888;
+        --accent: #0a0a0a;
+        --accent-dim: #e0e0e0;
+        --border: #d0d0d0;
+        --code-bg: #f5f5f5;
       }
     }
 
@@ -49,12 +49,12 @@
     /* ── typography ── */
 
     h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
-    h2 { font-size: 1rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin: 3rem 0 1rem; }
+    h2 { font-size: 1rem; font-weight: 600; color: var(--fg); text-transform: uppercase; letter-spacing: 0.08em; margin: 3rem 0 1rem; }
     h3 { font-size: 0.95rem; font-weight: 600; margin: 1.5rem 0 0.4rem; }
     p  { margin: 0.6rem 0; color: var(--fg); }
 
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: var(--fg-muted); }
 
     /* ── header ── */
 
@@ -78,19 +78,22 @@
     }
 
     .btn {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
       padding: 0.5rem 1.2rem;
-      border: 1px solid var(--accent);
-      color: var(--accent);
+      border: 1px solid var(--fg);
+      color: var(--fg);
       font-family: var(--font);
       font-size: 0.85rem;
       cursor: pointer;
+      text-decoration: none;
       transition: background 0.15s, color 0.15s;
     }
 
-    .btn:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
-    .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-    .btn.primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+    .btn:hover { background: var(--fg); color: var(--bg); text-decoration: none; }
+    .btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn.primary:hover { background: var(--fg-muted); border-color: var(--fg-muted); }
 
     /* ── code blocks ── */
 
@@ -124,9 +127,11 @@
       font-size: 0.82rem;
       line-height: 1.9;
       margin: 1rem 0;
+      white-space: pre;
+      overflow-x: auto;
     }
 
-    .flow .highlight { color: var(--accent); }
+    .flow .highlight { color: var(--fg); }
     .flow .dim { color: var(--border); }
 
     /* ── stations ── */
@@ -144,7 +149,7 @@
     .station:last-child { border-bottom: none; }
 
     .station-num {
-      color: var(--accent);
+      color: var(--fg);
       font-weight: 700;
       font-size: 1.1rem;
       padding-top: 0.1rem;
@@ -177,7 +182,10 @@
     <p class="tagline">A Claude Code skill that makes you understand a PR before you approve it.</p>
     <div class="cta-row">
       <a class="btn primary" href="#install">Install</a>
-      <a class="btn" href="https://github.com/manuartero/pr-buddy">GitHub</a>
+      <a class="btn" href="https://github.com/manuartero/pr-buddy">
+        <svg width="16" height="16" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
+        GitHub
+      </a>
     </div>
   </div>
 
@@ -195,8 +203,7 @@
 
   <!-- ── flow ── -->
   <h2>How it works</h2>
-  <div class="flow">
-<span class="highlight">/pr-buddy 847</span>
+  <div class="flow"><span class="highlight">/pr-buddy 847</span>
 <span class="dim">│</span>
 <span class="dim">├──</span> <span class="highlight">Pre-phase</span>   fetch PR + diff  (silent)
 <span class="dim">│</span>
@@ -210,8 +217,7 @@
 <span class="dim">│</span>
 <span class="dim">├──</span> <span class="highlight">Phase 2</span>     pr-review-toolkit  (anchored to Phase 1)
 <span class="dim">│</span>
-<span class="dim">└──</span> <span class="highlight">Summary</span>     3-bullet recap  →  paste into PR comment
-  </div>
+<span class="dim">└──</span> <span class="highlight">Summary</span>     3-bullet recap  →  paste into PR comment</div>
 
   <!-- ── install ── -->
   <h2 id="install">Install</h2>
@@ -265,7 +271,7 @@
       <div>
         <div class="station-title">Ownership</div>
         <div class="station-q">"Could you explain this PR to a teammate? What are you still unsure about?"</div>
-        <p style="font-size:0.82rem; color: var(--accent); margin-top:0.3rem;">← Phase 2 does not start until you confirm readiness here.</p>
+        <p style="font-size:0.82rem; color: var(--fg-muted); margin-top:0.3rem;">← Phase 2 does not start until you confirm readiness here.</p>
       </div>
     </div>
   </div>
