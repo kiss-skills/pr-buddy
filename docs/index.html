@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pr-buddy</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --fg: #e8e8e8;
+      --fg-muted: #888;
+      --accent: #5b8db8;
+      --accent-dim: #3a607f;
+      --border: #2a2a2a;
+      --code-bg: #1a1a1a;
+      --max-width: 720px;
+      --font: "Berkeley Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #fafaf8;
+        --fg: #1a1a1a;
+        --fg-muted: #666;
+        --accent: #2d6a9f;
+        --accent-dim: #c8dff0;
+        --border: #e0e0e0;
+        --code-bg: #f0f0ed;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.7;
+      padding: 0 1.5rem;
+    }
+
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 4rem 0 6rem;
+    }
+
+    /* ── typography ── */
+
+    h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
+    h2 { font-size: 1rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin: 3rem 0 1rem; }
+    h3 { font-size: 0.95rem; font-weight: 600; margin: 1.5rem 0 0.4rem; }
+    p  { margin: 0.6rem 0; color: var(--fg); }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── header ── */
+
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .header .tagline {
+      color: var(--fg-muted);
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1.2rem;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--font);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
+    .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .btn.primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+
+    /* ── code blocks ── */
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: var(--font);
+      font-size: 0.85em;
+      background: var(--code-bg);
+      padding: 0.1em 0.3em;
+      border: 1px solid var(--border);
+    }
+
+    pre code { background: none; border: none; padding: 0; font-size: inherit; }
+
+    /* ── ASCII flow ── */
+
+    .flow {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem 1.2rem;
+      color: var(--fg-muted);
+      font-size: 0.82rem;
+      line-height: 1.9;
+      margin: 1rem 0;
+    }
+
+    .flow .highlight { color: var(--accent); }
+    .flow .dim { color: var(--border); }
+
+    /* ── stations ── */
+
+    .stations { margin: 0.5rem 0; }
+
+    .station {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr;
+      gap: 0 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .station:last-child { border-bottom: none; }
+
+    .station-num {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding-top: 0.1rem;
+    }
+
+    .station-title { font-weight: 600; margin-bottom: 0.2rem; }
+    .station-q { color: var(--fg-muted); font-size: 0.88rem; font-style: italic; }
+
+    /* ── footer ── */
+
+    .footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--fg-muted);
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── hero ── -->
+  <div class="header">
+    <h1>pr-buddy</h1>
+    <p class="tagline">A Claude Code skill that makes you understand a PR before you approve it.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#install">Install</a>
+      <a class="btn" href="https://github.com/manuartero/pr-buddy">GitHub</a>
+    </div>
+  </div>
+
+  <!-- ── the problem ── -->
+  <h2>The problem</h2>
+  <p>
+    Agentic PR review tools are fast. Too fast. Teams accumulate <strong>cognitive debt</strong> —
+    reviewers click "OK-APPLY" without ever building a mental model of the changes.
+    Velocity increases. Comprehension does not.
+  </p>
+  <p>
+    Each rubber-stamped PR leaves your team less equipped to reason about the next one.
+    Incident response slows down. Onboarding degrades. Ownership diffuses.
+  </p>
+
+  <!-- ── flow ── -->
+  <h2>How it works</h2>
+  <div class="flow">
+<span class="highlight">/pr-buddy 847</span>
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="highlight">Pre-phase</span>   fetch PR + diff  (silent)
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="highlight">Phase 1</span>     Socratic walkthrough
+<span class="dim">│             │</span>
+<span class="dim">│             ├──</span> Station 1 · Goal
+<span class="dim">│             ├──</span> Station 2 · Architecture
+<span class="dim">│             ├──</span> Station 3 · Decisions
+<span class="dim">│             ├──</span> Station 4 · Risk
+<span class="dim">│             └──</span> Station 5 · Ownership  ← gate
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="highlight">Phase 2</span>     pr-review-toolkit  (anchored to Phase 1)
+<span class="dim">│</span>
+<span class="dim">└──</span> <span class="highlight">Summary</span>     3-bullet recap  →  paste into PR comment
+  </div>
+
+  <!-- ── install ── -->
+  <h2 id="install">Install</h2>
+  <pre><code>claude skill add manuartero/pr-buddy</code></pre>
+  <p>Requirements: <code>gh</code> CLI (authenticated) · <code>pr-review-toolkit</code> for Phase 2</p>
+
+  <!-- ── usage ── -->
+  <h2>Usage</h2>
+  <pre><code>/pr-buddy &lt;pr_number_or_branch_or_url&gt;
+
+# examples
+/pr-buddy 847
+/pr-buddy feat/rate-limiting
+/pr-buddy https://github.com/org/repo/pull/847</code></pre>
+
+  <!-- ── stations ── -->
+  <h2>The 5 stations</h2>
+  <p>Each station follows the same pattern: you answer first, the skill reveals its reading second.</p>
+
+  <div class="stations">
+    <div class="station">
+      <div class="station-num">01</div>
+      <div>
+        <div class="station-title">Goal</div>
+        <div class="station-q">"What problem do you think this PR is solving?"</div>
+      </div>
+    </div>
+    <div class="station">
+      <div class="station-num">02</div>
+      <div>
+        <div class="station-title">Architecture</div>
+        <div class="station-q">"Which is the entry point? Walk me through your mental model."</div>
+      </div>
+    </div>
+    <div class="station">
+      <div class="station-num">03</div>
+      <div>
+        <div class="station-title">Decisions</div>
+        <div class="station-q">"The author chose X. What would you have done differently?"</div>
+      </div>
+    </div>
+    <div class="station">
+      <div class="station-num">04</div>
+      <div>
+        <div class="station-title">Risk</div>
+        <div class="station-q">"If you had to name one thing that could go wrong here, what would it be?"</div>
+      </div>
+    </div>
+    <div class="station">
+      <div class="station-num">05</div>
+      <div>
+        <div class="station-title">Ownership</div>
+        <div class="station-q">"Could you explain this PR to a teammate? What are you still unsure about?"</div>
+        <p style="font-size:0.82rem; color: var(--accent); margin-top:0.3rem;">← Phase 2 does not start until you confirm readiness here.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── footer ── -->
+  <div class="footer">
+    <span>MIT License · <a href="https://github.com/manuartero/pr-buddy">manuartero/pr-buddy</a></span>
+    <span>Built with <a href="https://claude.ai/code">Claude Code</a></span>
+  </div>
+
+</div>
+</body>
+</html>
