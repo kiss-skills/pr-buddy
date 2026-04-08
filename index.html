@@ -10,9 +10,10 @@
       --fg: #f0f0f0;
       --fg-muted: #666;
       --accent: #f0f0f0;
-      --accent-dim: #333;
+      --accent-dim: #1a1a1a;
       --border: #222;
       --code-bg: #111;
+      --highlight: #c84820;
       --max-width: 720px;
       --font: "Berkeley Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
     }
@@ -35,7 +36,7 @@
       background: var(--bg);
       color: var(--fg);
       font-family: var(--font);
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1.7;
       padding: 0 1.5rem;
     }
@@ -48,7 +49,8 @@
 
     /* ── typography ── */
 
-    h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
+    h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; }
+    h1 code { font-size: inherit; background: none; border: none; padding: 0; color: var(--highlight); }
     h2 { font-size: 1rem; font-weight: 600; color: var(--fg); text-transform: uppercase; letter-spacing: 0.08em; margin: 3rem 0 1rem; }
     h3 { font-size: 0.95rem; font-weight: 600; margin: 1.5rem 0 0.4rem; }
     p  { margin: 0.6rem 0; color: var(--fg); }
@@ -131,7 +133,7 @@
       overflow-x: auto;
     }
 
-    .flow .highlight { color: var(--fg); }
+    .flow .highlight { color: var(--highlight); }
     .flow .dim { color: var(--border); }
 
     /* ── stations ── */
@@ -171,18 +173,34 @@
       flex-wrap: wrap;
       gap: 0.5rem;
     }
+
+    /* ── back link ── */
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+      text-decoration: none;
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.02em;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--highlight); }
   </style>
 </head>
 <body>
 <div class="page">
 
+  <a class="back-link" href="https://www.kiss-skills.dev/">← kiss-skills.dev</a>
+
   <!-- ── hero ── -->
   <div class="header">
-    <h1>pr-buddy</h1>
-    <p class="tagline">A Claude Code skill that makes you understand a PR before you approve it.</p>
+    <h1><code>/pr-buddy</code> <span style="font-size:0.75rem; font-weight:400; color:var(--fg-muted);">@0.1.0</span></h1>
+    <p class="tagline">Understand the PR before you approve it.</p>
     <div class="cta-row">
       <a class="btn primary" href="#install">Install</a>
-      <a class="btn" href="https://github.com/manuartero/pr-buddy">
+      <a class="btn" href="https://github.com/kiss-skills/pr-buddy">
         <svg width="16" height="16" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
         GitHub
       </a>
@@ -192,13 +210,8 @@
   <!-- ── the problem ── -->
   <h2>The problem</h2>
   <p>
-    Agentic PR review tools are fast. Too fast. Teams accumulate <strong>cognitive debt</strong> —
-    reviewers click "OK-APPLY" without ever building a mental model of the changes.
-    Velocity increases. Comprehension does not.
-  </p>
-  <p>
-    Each rubber-stamped PR leaves your team less equipped to reason about the next one.
-    Incident response slows down. Onboarding degrades. Ownership diffuses.
+    AI review tools make it too easy to approve code you haven't read.
+    Click through, apply, merge. Later — in an incident, a review, onboarding someone — you can't explain it.
   </p>
 
   <!-- ── flow ── -->
@@ -221,7 +234,7 @@
 
   <!-- ── install ── -->
   <h2 id="install">Install</h2>
-  <pre><code>claude skill add manuartero/pr-buddy</code></pre>
+  <pre><code>claude skill add kiss-skills/pr-buddy</code></pre>
   <p>Requirements: <code>gh</code> CLI (authenticated) · <code>pr-review-toolkit</code> for Phase 2</p>
 
   <!-- ── usage ── -->
@@ -235,7 +248,7 @@
 
   <!-- ── stations ── -->
   <h2>The 5 stations</h2>
-  <p>Each station follows the same pattern: you answer first, the skill reveals its reading second.</p>
+  <p>You answer first. Then the skill shows its reading.</p>
 
   <div class="stations">
     <div class="station">
@@ -249,7 +262,7 @@
       <div class="station-num">02</div>
       <div>
         <div class="station-title">Architecture</div>
-        <div class="station-q">"Which is the entry point? Walk me through your mental model."</div>
+        <div class="station-q">"Which file is the entry point? Walk me through what you think is happening."</div>
       </div>
     </div>
     <div class="station">
@@ -263,7 +276,7 @@
       <div class="station-num">04</div>
       <div>
         <div class="station-title">Risk</div>
-        <div class="station-q">"If you had to name one thing that could go wrong here, what would it be?"</div>
+        <div class="station-q">"What's the one thing that could go wrong here?"</div>
       </div>
     </div>
     <div class="station">
@@ -271,15 +284,15 @@
       <div>
         <div class="station-title">Ownership</div>
         <div class="station-q">"Could you explain this PR to a teammate? What are you still unsure about?"</div>
-        <p style="font-size:0.82rem; color: var(--fg-muted); margin-top:0.3rem;">← Phase 2 does not start until you confirm readiness here.</p>
+        <p style="font-size:0.82rem; color: var(--fg-muted); margin-top:0.3rem;">← Phase 2 doesn't start until you say you're ready.</p>
       </div>
     </div>
   </div>
 
   <!-- ── footer ── -->
   <div class="footer">
-    <span>MIT License · <a href="https://github.com/manuartero/pr-buddy">manuartero/pr-buddy</a></span>
-    <span>Built with <a href="https://claude.ai/code">Claude Code</a></span>
+    <span>MIT License · <a href="https://github.com/kiss-skills/pr-buddy">kiss-skills/pr-buddy</a></span>
+    <a class="back-link" href="https://www.kiss-skills.dev/" style="margin-bottom:0;">← kiss-skills.dev</a>
   </div>
 
 </div>

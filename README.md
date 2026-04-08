@@ -1,5 +1,7 @@
 # `/pr-buddy`
 
+![pr-buddy mascot](ICON.png)
+
 A Claude Code skill that makes you understand a PR before you approve it.
 
 ## The problem
@@ -24,7 +26,7 @@ Two phases:
 Add this skill to your Claude Code setup:
 
 ```bash
-claude skill add manuartero/pr-buddy
+claude skill add kiss-skills/pr-buddy
 ```
 
 **Requirements:**

@@ -9,7 +9,7 @@ license: MIT
 argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
-  author: manuartero
+  author: kiss-skills
   version: 0.1.0
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
