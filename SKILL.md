@@ -10,7 +10,7 @@ argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
   author: kiss-skills
-  version: 0.1.0
+  version: 0.2.0
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 
@@ -51,6 +51,39 @@ Do not output anything until Station 1.
 
 ---
 
+### Inline command — `tree` / `diff changes`
+
+At **any point** during the walkthrough, if the reviewer types any of the following trigger
+words, render the change tree and then **resume from exactly where you were** — do not
+advance the station.
+
+Triggers: `tree`, `diff changes`, `diff`, `changes`, `worktree`, `files`
+
+Render format:
+
+```
+Changed files  (+<total additions> / -<total deletions>)
+──────────────────────────────────────────────────────
+src/
+  auth/
+    middleware.ts        +42 / -8    ← entry point
+    session.ts           +15 / -0
+  utils/
+    token.ts             +6  / -12   ← key decision (Station 3)
+tests/
+  auth.test.ts           +30 / -2
+──────────────────────────────────────────────────────
+  3 dirs · 5 files · +93 / -22 total
+```
+
+Annotate key files with a short inline note (e.g. `← entry point`, `← new module`,
+`← deleted`, `← most changed`) derived from what you have built so far. Keep annotations
+to one short phrase. If the session is still early, annotate conservatively.
+
+After rendering, prompt the reviewer to continue: _"Where were we — ready to go on?"_
+
+---
+
 ### Phase 1 — Socratic Walkthrough (5 stations)
 
 Work through each station in sequence. At each station:
@@ -61,6 +94,19 @@ Work through each station in sequence. At each station:
 ---
 
 **Station 1 — Goal**
+
+Before asking the question, print the PR title and description so the reviewer has them
+at hand without needing to open GitHub:
+
+```
+PR #<number> — <title>
+Author: <author>  ·  <baseRef> ← <headRef>
+
+<body>
+──────────────────────────────────────────────────────
+```
+
+Then ask:
 
 > "Based on the title and description, what problem do you think this PR is solving? What's
 > the outcome the author was aiming for?"
@@ -77,6 +123,22 @@ in one sentence.
 
 After the reviewer answers: draw the actual call/data flow from the diff. Highlight anything
 that surprised you.
+
+Then open a **file walkthrough tracker** — a live TODO list covering the **main files only**
+(skip test files, generated files, lock files, and trivial config changes). Show it as a
+checklist and update it as the conversation progresses through the diff:
+
+```
+File walkthrough
+  [ ] src/auth/middleware.ts    — entry point
+  [ ] src/auth/session.ts       — new module
+  [ ] src/utils/token.ts        — key decision
+```
+
+Mark a file `[x]` once you and the reviewer have discussed its purpose and changes at any
+station. Keep the list visible (re-print it when it changes) so the reviewer always knows
+what's left. Do not add files to this list mid-session unless a genuinely important file
+was missed in the initial triage.
 
 ---
 
@@ -145,9 +207,16 @@ PHASE_1_CONTEXT:
   confidence:    <reviewer's self-reported confidence from Station 5>
 ```
 
-#### 2c — Invoke sub-agents with context
+#### 2c — Announce and invoke sub-agents with context
 
-Run the following sub-agents in parallel, injecting the Phase 1 context into each prompt:
+Before launching the sub-agents, output the following to the reviewer:
+
+> Now I'm going to call **pr-review-toolkit** — considering all the input you've shared:
+> the goal you identified, the entry point we traced, the decisions we weighed, and the
+> risks you named. The automated checks will be focused by that understanding, not run
+> blind.
+
+Then run the following sub-agents in parallel, injecting the Phase 1 context into each prompt:
 
 - **`pr-review-toolkit:code-reviewer`** — provide the diff and note: "The reviewer traced
   the entry point as `<entry_point>`. The following decisions were discussed as known
