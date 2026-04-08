@@ -119,6 +119,28 @@
 
     pre code { background: none; border: none; padding: 0; font-size: inherit; }
 
+    /* ── copy block ── */
+
+    .copy-block { position: relative; }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+      font-family: var(--font);
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .copy-btn:hover { color: var(--fg); border-color: var(--fg-muted); }
+    .copy-btn.copied { color: #28c840; border-color: #28c840; }
+
     /* ── ASCII flow ── */
 
     .flow {
@@ -187,6 +209,92 @@
     }
 
     .back-link:hover { color: var(--highlight); }
+
+    /* ── terminal session ── */
+
+    .terminal-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .terminal-window {
+      border: 1px solid var(--border);
+      background: #050505;
+      margin: 0.5rem 0 1.5rem;
+    }
+
+    @media (prefers-color-scheme: light) {
+      .terminal-window { background: #0a0a0a; }
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      background: #111;
+    }
+
+    @media (prefers-color-scheme: light) {
+      .terminal-bar { background: #1a1a1a; }
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red    { background: #ff5f57; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #28c840; }
+
+    .terminal-title {
+      font-size: 0.75rem;
+      color: #555;
+      margin-left: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .terminal-body {
+      padding: 1rem 1.2rem 1.2rem;
+      max-height: 540px;
+      overflow-y: auto;
+      font-size: 0.82rem;
+      line-height: 1.75;
+      scrollbar-width: thin;
+      scrollbar-color: #333 transparent;
+    }
+
+    .terminal-body::-webkit-scrollbar { width: 4px; }
+    .terminal-body::-webkit-scrollbar-track { background: transparent; }
+    .terminal-body::-webkit-scrollbar-thumb { background: #333; }
+
+    .t-line {
+      display: block;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .t-line.skill  { color: #555; }
+    .t-line.user   { color: #e8e8e8; font-weight: 700; }
+    .t-line.section {
+      color: #333;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      margin-top: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .t-line.critical { color: var(--highlight); }
+    .t-line.finding  { color: #777; }
+    .t-line.verdict  { color: #e8e8e8; font-weight: 700; margin-top: 0.6rem; }
+    .t-line.blank    { display: block; height: 0.4rem; }
+
+    .t-prefix { color: var(--highlight); }
   </style>
 </head>
 <body>
@@ -196,7 +304,7 @@
 
   <!-- ── hero ── -->
   <div class="header">
-    <h1><code>/pr-buddy</code> <span style="font-size:0.75rem; font-weight:400; color:var(--fg-muted);">@0.1.0</span></h1>
+    <h1><code>/pr-buddy</code> <span style="font-size:1.1rem; font-weight:400; color:var(--fg-muted);">@0.2.0</span></h1>
     <p class="tagline">Understand the PR before you approve it.</p>
     <div class="cta-row">
       <a class="btn primary" href="#install">Install</a>
@@ -211,40 +319,172 @@
   <h2>The problem</h2>
   <p>
     AI review tools make it too easy to approve code you haven't read.
-    Click through, apply, merge. Later — in an incident, a review, onboarding someone — you can't explain it.
-  </p>
+    Click through, apply, merge. Later you can't explain it.
+</p>
 
-  <!-- ── flow ── -->
-  <h2>How it works</h2>
-  <div class="flow"><span class="highlight">/pr-buddy 847</span>
-<span class="dim">│</span>
-<span class="dim">├──</span> <span class="highlight">Pre-phase</span>   fetch PR + diff  (silent)
-<span class="dim">│</span>
-<span class="dim">├──</span> <span class="highlight">Phase 1</span>     Socratic walkthrough
-<span class="dim">│             │</span>
-<span class="dim">│             ├──</span> Station 1 · Goal
-<span class="dim">│             ├──</span> Station 2 · Architecture
-<span class="dim">│             ├──</span> Station 3 · Decisions
-<span class="dim">│             ├──</span> Station 4 · Risk
-<span class="dim">│             └──</span> Station 5 · Ownership  ← gate
-<span class="dim">│</span>
-<span class="dim">├──</span> <span class="highlight">Phase 2</span>     pr-review-toolkit  (anchored to Phase 1)
-<span class="dim">│</span>
-<span class="dim">└──</span> <span class="highlight">Summary</span>     3-bullet recap  →  paste into PR comment</div>
+  <!-- ── solution ── -->
+  <h2>Solution</h2>
+  <p>
+    <code>/pr-buddy &lt;pr&gt;</code> walks you through a PR in 5 stations; <strong>you</strong> answer first, then the skill shows its reading.<br>
+    Once you can explain the PR confidently, it <code>runs pr-review-toolkit</code> <strong>anchored to what you did discover</strong>.
+  </p>
+  <blockquote style="border-left: 2px solid var(--border); margin: 1rem 0 0; padding: 0.4rem 1rem; color: var(--fg-muted); font-size: 0.9rem;">
+    The output is a combined PR comment <strong style="color: var(--fg);">that's yours</strong> to post.
+  </blockquote>
+  <p style="display:none"></p>
 
   <!-- ── install ── -->
   <h2 id="install">Install</h2>
-  <pre><code>claude skill add kiss-skills/pr-buddy</code></pre>
+  <div class="copy-block">
+    <pre><code>claude skill add kiss-skills/pr-buddy</code></pre>
+    <button class="copy-btn" onclick="
+      navigator.clipboard.writeText('claude skill add kiss-skills/pr-buddy');
+      this.textContent = 'copied';
+      this.classList.add('copied');
+      setTimeout(() => { this.textContent = 'copy'; this.classList.remove('copied'); }, 2000);
+    ">copy</button>
+  </div>
   <p>Requirements: <code>gh</code> CLI (authenticated) · <code>pr-review-toolkit</code> for Phase 2</p>
 
-  <!-- ── usage ── -->
-  <h2>Usage</h2>
-  <pre><code>/pr-buddy &lt;pr_number_or_branch_or_url&gt;
+  <!-- ── actual session ── -->
+  <h2>Actual session</h2>
+  <div style="margin-top: 1rem;">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <span class="terminal-dot dot-red"></span>
+        <span class="terminal-dot dot-yellow"></span>
+        <span class="terminal-dot dot-green"></span>
+        <span class="terminal-title">claude — MegaCorp/some-repo</span>
+      </div>
+      <div class="terminal-body">
 
-# examples
-/pr-buddy 847
-/pr-buddy feat/rate-limiting
-/pr-buddy https://github.com/org/repo/pull/847</code></pre>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>/pr-buddy 74</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  fetching PR #74 and diff… (silent pre-phase)</span>
+        <span class="t-line skill">  identified entry point: skills/pgm/jira-ticket-automator/SKILL.md</span>
+        <span class="t-line skill">  risk flag: catalog.json and INDEX.md look hand-edited</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line section">── station 1 · goal ────────────────────────────────────────────</span>
+        <span class="t-line skill">  Based on the title and description, what problem do you think this PR</span>
+        <span class="t-line skill">  is solving? What's the outcome the author was aiming for?</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>there was a skill named jira-tickets-from-epic and this is renaming it</span>
+        <span class="t-line user">       to jira-ticket-automator, ALSO adding 5 new fixes/features: jira project</span>
+        <span class="t-line user">       ids, ticket naming, a perf improvement, some internal thing, new writeback</span>
+        <span class="t-line user">       to Confluence with the jira link, plus an MCP fix for windowsOS</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Exactly right. The rename signals it's now scoped specifically to the</span>
+        <span class="t-line skill">  ACME+Confluence workflow. The 5 improvements are hardcoded learnings from</span>
+        <span class="t-line skill">  a real run against ACME-1158 — the "happy path" became the spec.</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line section">── station 2 · architecture ────────────────────────────────────</span>
+        <span class="t-line skill">  Changed files: INDEX.md, catalog.json,</span>
+        <span class="t-line skill">  skills/pgm/jira-ticket-automator/{SKILL.md, README.md, references/jira-field-mapping.md}</span>
+        <span class="t-line skill">  Which file is the entry point? Walk me through your mental model.</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>the main thing should be SKILL.md [tree]</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Changed files  (+400 / -0)</span>
+        <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
+        <span class="t-line skill">  skills/pgm/jira-ticket-automator/</span>
+        <span class="t-line skill">    SKILL.md                    +246 / -0    <span style="color:#c84820;">← entry point</span></span>
+        <span class="t-line skill">    README.md                   +77  / -0    ← human-facing docs</span>
+        <span class="t-line skill">    references/</span>
+        <span class="t-line skill">      jira-field-mapping.md     +55  / -0    ← field reference</span>
+        <span class="t-line skill">  INDEX.md                      +1   / -0    ← catalog pointer</span>
+        <span class="t-line skill">  catalog.json                  +21  / -0    ← catalog entry</span>
+        <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
+        <span class="t-line skill">    2 dirs · 5 files · +400 / -0 total</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Right. SKILL.md is the agent-executable definition that drives everything.</span>
+        <span class="t-line skill">  The flow is linear: read epic → read Confluence pages → approval gate →</span>
+        <span class="t-line skill">  create issues → write back to Confluence. The writeback (Phase 3.7) is the</span>
+        <span class="t-line skill">  most interesting addition — it's what makes the skill idempotent on re-runs.</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line section">── station 3 · decisions ───────────────────────────────────────</span>
+        <span class="t-line skill">  Three notable choices in the diff:</span>
+        <span class="t-line skill">  1. Epic link via jira_create_issue_link, not customfield_10091</span>
+        <span class="t-line skill">  2. issuetype ID "5" hardcoded in additional_fields</span>
+        <span class="t-line skill">  3. Confluence writeback patches "* US CORP:" line in-place</span>
+        <span class="t-line skill">  What would you have done differently?</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>1. maybe customfield_10091 is project-specific and OP kept it flexible?</span>
+        <span class="t-line user">       2. but then point 1 loses strength — the id IS fixed here</span>
+        <span class="t-line user">       3. this feels like a possible bug</span>
+        <span class="t-line user">       4. why jira-field-mapping.md? a .json would be more reliable</span>
+        <span class="t-line user">          than an LLM-parsed markdown file</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  1. Correct — customfield_10091 is screen-restricted in BIGPROJECT.</span>
+        <span class="t-line skill">     jira_create_issue_link isn't a preference, it's a forced workaround.</span>
+        <span class="t-line skill">  2. Sharp catch. ID "5" assumes Sub-task type is 5 everywhere. Brittle.</span>
+        <span class="t-line skill">  3. Agreed — "* US CORP:" assumes that exact string. No fallback documented.</span>
+        <span class="t-line skill">  4. Strong point. The .md conflicts with SKILL.md (issuetype: Story vs User Story).</span>
+        <span class="t-line skill">     A JSON file forces structure — harder to contradict.</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>also — is README.md necessary? might be duplicating other READMEs in the repo</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Valid — README.md duplicates SKILL.md almost entirely. The only unique content</span>
+        <span class="t-line skill">  is the "How to invoke" examples. And there's an active bug: the file structure</span>
+        <span class="t-line skill">  section still shows the old path skills/pgm/jira-tickets-from-epic/</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line section">── station 4 · risk ────────────────────────────────────────────</span>
+        <span class="t-line skill">  One thing that could go wrong in production — what would it be?</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>removing a skill from catalog could be nasty on people's laptops…</span>
+        <span class="t-line user">       maybe safe since it's an internal repo</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Good instinct about catalog churn — but this PR has the opposite problem.</span>
+        <span class="t-line blank"></span>
+        <span class="t-line critical">  catalog.json still says name: jira-tickets-from-epic, version: 0.1.0,</span>
+        <span class="t-line critical">  path: skills/pgm/jira-tickets-from-epic/SKILL.md — none of which exist.</span>
+        <span class="t-line critical">  Actual files landed under jira-ticket-automator/. SKILL.md says v0.5.0.</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Broken in three ways simultaneously: wrong name, wrong path, wrong version.</span>
+        <span class="t-line skill">  Anyone running claude skill add gets a 404. Likely cause: catalog.json was</span>
+        <span class="t-line skill">  hand-edited instead of running npm --prefix tools run build-index.</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line section">── station 5 · ownership ───────────────────────────────────────</span>
+        <span class="t-line skill">  Could you explain this PR to a teammate right now?</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>yes. next step</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line section">── phase 2 · automated checks (3 agents, parallel) ─────────────</span>
+        <span class="t-line skill">  running code-reviewer, silent-failure-hunter, pr-test-analyzer…</span>
+        <span class="t-line skill">  context from walkthrough passed as anchor (your findings, decisions noted)</span>
+        <span class="t-line blank"></span>
+        <span class="t-line critical">  [CRITICAL] catalog.json / INDEX.md — wrong name, path, version. run build-index.</span>
+        <span class="t-line critical">  [CRITICAL] Phase 3.7 writeback: no branch for missing "* US CORP:" line →</span>
+        <span class="t-line critical">             idempotency guard silently broken, duplicate US on re-run</span>
+        <span class="t-line critical">  [CRITICAL] "already linked" detection matches any [A-Z]+-[0-9]+ in prose →</span>
+        <span class="t-line critical">             silent false-positive skips entire issue creation</span>
+        <span class="t-line finding">  [HIGH]     jira-field-mapping.md conflicts with SKILL.md on 3 points</span>
+        <span class="t-line finding">  [HIGH]     hardcoded issuetype ID "5" applied to all projects without check</span>
+        <span class="t-line finding">  [HIGH]     jira_create_issue_link failure leaves US orphaned from epic silently</span>
+        <span class="t-line finding">  [GAP]      all 4 test-plan checkboxes unchecked; no catalog consistency test</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line section">── comment posted to PR #74 ─────────────────────────────────────</span>
+        <span class="t-line skill">  synthesizes walkthrough conversation + automated checks ↓</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Goal: rename + upgrade jira-tickets-from-epic → jira-ticket-automator v0.5.0,</span>
+        <span class="t-line skill">  baking in ACME-1158 learnings. Epic link via jira_create_issue_link because</span>
+        <span class="t-line skill">  customfield_10091 is screen-restricted in BIGPROJECT — forced workaround.</span>
+        <span class="t-line skill">  Main risk: writeback patches "* US CORP:" with no fallback — idempotency breaks.</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Automated: 3 CRITICALs (catalog broken, writeback silent fail, false-skip),</span>
+        <span class="t-line skill">  3 HIGHs (field-mapping conflicts, hardcoded ID, orphaned epic link), 1 GAP.</span>
+        <span class="t-line blank"></span>
+        <span class="t-line verdict">  Verdict: Request changes · 5 blockers before merge</span>
+
+      </div>
+    </div>
+  </div>
 
   <!-- ── stations ── -->
   <h2>The 5 stations</h2>
