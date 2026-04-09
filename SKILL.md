@@ -10,7 +10,7 @@ argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
   author: kiss-skills
-  version: 0.3.0
+  version: 0.3.1
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 
@@ -57,22 +57,22 @@ At the start of each station (1–5) and before the Phase 2 announcement, output
 dog as a transition signal, followed by a blank line and the station divider:
 
 ```
-  / \__
- (    @\___
+  / ╲--
+ (    @╲---
  /         O
-/   (_____/
-/_____/   U
+/   (-----/
+/-----/   U
 ```
 
 Output the dog art as plain text (no code block wrapper), then the divider on the next line.
 Example full transition block for Station 2:
 
 ```
-  / \__
- (    @\___
+  / ╲--
+ (    @╲---
  /         O
-/   (_____/
-/_____/   U
+/   (-----/
+/-----/   U
 
 ── station 2 · architecture ─────────────────────────────────────────
 ```
