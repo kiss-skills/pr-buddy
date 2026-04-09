@@ -304,7 +304,7 @@
 
   <!-- ── hero ── -->
   <div class="header">
-    <h1><code>/pr-buddy</code> <span style="font-size:1.1rem; font-weight:400; color:var(--fg-muted);">@0.2.0</span></h1>
+    <h1><code>/pr-buddy</code> <span style="font-size:1.1rem; font-weight:400; color:var(--fg-muted);">@0.3.0</span></h1>
     <p class="tagline">Understand the PR before you approve it.</p>
     <div class="cta-row">
       <a class="btn primary" href="#install">Install</a>
@@ -365,9 +365,15 @@
         <span class="t-line skill">  risk flag: catalog.json and INDEX.md look hand-edited</span>
         <span class="t-line blank"></span>
 
+        <span class="t-line skill">  / \__</span>
+        <span class="t-line skill"> (    @\___</span>
+        <span class="t-line skill"> /         O</span>
+        <span class="t-line skill">/   (_____/</span>
+        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line blank"></span>
         <span class="t-line section">── station 1 · goal ────────────────────────────────────────────</span>
-        <span class="t-line skill">  Based on the title and description, what problem do you think this PR</span>
-        <span class="t-line skill">  is solving? What's the outcome the author was aiming for?</span>
+        <span class="t-line skill">  <strong>Based on the title and description, what problem do you think this PR</strong></span>
+        <span class="t-line skill">  <strong>is solving? What's the outcome the author was aiming for?</strong></span>
         <span class="t-line blank"></span>
         <span class="t-line user"><span class="t-prefix">you ❯ </span>there was a skill named jira-tickets-from-epic and this is renaming it</span>
         <span class="t-line user">       to jira-ticket-automator, ALSO adding 5 new fixes/features: jira project</span>
@@ -379,13 +385,13 @@
         <span class="t-line skill">  a real run against ACME-1158 — the "happy path" became the spec.</span>
         <span class="t-line blank"></span>
 
+        <span class="t-line skill">  / \__</span>
+        <span class="t-line skill"> (    @\___</span>
+        <span class="t-line skill"> /         O</span>
+        <span class="t-line skill">/   (_____/</span>
+        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line blank"></span>
         <span class="t-line section">── station 2 · architecture ────────────────────────────────────</span>
-        <span class="t-line skill">  Changed files: INDEX.md, catalog.json,</span>
-        <span class="t-line skill">  skills/pgm/jira-ticket-automator/{SKILL.md, README.md, references/jira-field-mapping.md}</span>
-        <span class="t-line skill">  Which file is the entry point? Walk me through your mental model.</span>
-        <span class="t-line blank"></span>
-        <span class="t-line user"><span class="t-prefix">you ❯ </span>the main thing should be SKILL.md [tree]</span>
-        <span class="t-line blank"></span>
         <span class="t-line skill">  Changed files  (+400 / -0)</span>
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
         <span class="t-line skill">  skills/pgm/jira-ticket-automator/</span>
@@ -398,18 +404,42 @@
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
         <span class="t-line skill">    2 dirs · 5 files · +400 / -0 total</span>
         <span class="t-line blank"></span>
+        <span class="t-line skill">  <strong>Which file is the entry point? Walk me through your mental model —</strong></span>
+        <span class="t-line skill">  <strong>how do these changes fit together?</strong></span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>the main thing should be SKILL.md — drives everything else</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  Right. SKILL.md is the agent-executable definition that drives everything.</span>
         <span class="t-line skill">  The flow is linear: read epic → read Confluence pages → approval gate →</span>
         <span class="t-line skill">  create issues → write back to Confluence. The writeback (Phase 3.7) is the</span>
         <span class="t-line skill">  most interesting addition — it's what makes the skill idempotent on re-runs.</span>
         <span class="t-line blank"></span>
+        <span class="t-line skill">  File walkthrough</span>
+        <span class="t-line skill">    [x] SKILL.md                   — entry point</span>
+        <span class="t-line skill">    [ ] README.md                  — human-facing docs</span>
+        <span class="t-line skill">    [ ] references/jira-field-mapping.md — field reference</span>
+        <span class="t-line skill">    [ ] INDEX.md / catalog.json    — registry</span>
+        <span class="t-line blank"></span>
 
+        <span class="t-line skill">  / \__</span>
+        <span class="t-line skill"> (    @\___</span>
+        <span class="t-line skill"> /         O</span>
+        <span class="t-line skill">/   (_____/</span>
+        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line blank"></span>
         <span class="t-line section">── station 3 · decisions ───────────────────────────────────────</span>
+        <span class="t-line skill">  File walkthrough</span>
+        <span class="t-line skill">    [x] SKILL.md                   — entry point (discussed)</span>
+        <span class="t-line skill">    [ ] README.md                  — human-facing docs</span>
+        <span class="t-line skill">    [ ] references/jira-field-mapping.md — field reference  <span style="color:#c84820;">← focus</span></span>
+        <span class="t-line skill">    [ ] INDEX.md / catalog.json    — registry</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  Three notable choices in the diff:</span>
-        <span class="t-line skill">  1. Epic link via jira_create_issue_link, not customfield_10091</span>
-        <span class="t-line skill">  2. issuetype ID "5" hardcoded in additional_fields</span>
-        <span class="t-line skill">  3. Confluence writeback patches "* US CORP:" line in-place</span>
-        <span class="t-line skill">  What would you have done differently?</span>
+        <span class="t-line skill">  1. In SKILL.md: epic link via jira_create_issue_link, not customfield_10091</span>
+        <span class="t-line skill">  2. In SKILL.md: issuetype ID "5" hardcoded in additional_fields</span>
+        <span class="t-line skill">  3. In SKILL.md: Confluence writeback patches "* US CORP:" line in-place</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  <strong>What would you have done differently, if anything?</strong></span>
         <span class="t-line blank"></span>
         <span class="t-line user"><span class="t-prefix">you ❯ </span>1. maybe customfield_10091 is project-specific and OP kept it flexible?</span>
         <span class="t-line user">       2. but then point 1 loses strength — the id IS fixed here</span>
@@ -430,9 +460,33 @@
         <span class="t-line skill">  is the "How to invoke" examples. And there's an active bug: the file structure</span>
         <span class="t-line skill">  section still shows the old path skills/pgm/jira-tickets-from-epic/</span>
         <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>remind me which files we're looking at</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  Changed files  (+400 / -0)</span>
+        <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
+        <span class="t-line skill">  skills/pgm/jira-ticket-automator/</span>
+        <span class="t-line skill">    SKILL.md                    +246 / -0    <span style="color:#c84820;">← entry point</span></span>
+        <span class="t-line skill">    README.md                   +77  / -0    ← human-facing docs</span>
+        <span class="t-line skill">    references/</span>
+        <span class="t-line skill">      jira-field-mapping.md     +55  / -0    ← field reference</span>
+        <span class="t-line skill">  INDEX.md                      +1   / -0    ← catalog pointer</span>
+        <span class="t-line skill">  catalog.json                  +21  / -0    ← catalog entry</span>
+        <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
+        <span class="t-line skill">  Where were we — ready to go on?</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>yes</span>
+        <span class="t-line blank"></span>
 
+        <span class="t-line skill">  / \__</span>
+        <span class="t-line skill"> (    @\___</span>
+        <span class="t-line skill"> /         O</span>
+        <span class="t-line skill">/   (_____/</span>
+        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line blank"></span>
         <span class="t-line section">── station 4 · risk ────────────────────────────────────────────</span>
-        <span class="t-line skill">  One thing that could go wrong in production — what would it be?</span>
+        <span class="t-line skill">  <strong>If you had to name one thing that could go wrong with this PR in</strong></span>
+        <span class="t-line skill">  <strong>production — an edge case, a race condition, a missing test, a</strong></span>
+        <span class="t-line skill">  <strong>performance concern — what would it be?</strong></span>
         <span class="t-line blank"></span>
         <span class="t-line user"><span class="t-prefix">you ❯ </span>removing a skill from catalog could be nasty on people's laptops…</span>
         <span class="t-line user">       maybe safe since it's an internal repo</span>
@@ -448,12 +502,25 @@
         <span class="t-line skill">  hand-edited instead of running npm --prefix tools run build-index.</span>
         <span class="t-line blank"></span>
 
+        <span class="t-line skill">  / \__</span>
+        <span class="t-line skill"> (    @\___</span>
+        <span class="t-line skill"> /         O</span>
+        <span class="t-line skill">/   (_____/</span>
+        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line blank"></span>
         <span class="t-line section">── station 5 · ownership ───────────────────────────────────────</span>
-        <span class="t-line skill">  Could you explain this PR to a teammate right now?</span>
+        <span class="t-line skill">  <strong>Could you explain this PR to a teammate right now, confidently?</strong></span>
+        <span class="t-line skill">  <strong>What, if anything, are you still unsure about?</strong></span>
         <span class="t-line blank"></span>
         <span class="t-line user"><span class="t-prefix">you ❯ </span>yes. next step</span>
         <span class="t-line blank"></span>
 
+        <span class="t-line skill">  / \__</span>
+        <span class="t-line skill"> (    @\___</span>
+        <span class="t-line skill"> /         O</span>
+        <span class="t-line skill">/   (_____/</span>
+        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line blank"></span>
         <span class="t-line section">── phase 2 · automated checks (3 agents, parallel) ─────────────</span>
         <span class="t-line skill">  running code-reviewer, silent-failure-hunter, pr-test-analyzer…</span>
         <span class="t-line skill">  context from walkthrough passed as anchor (your findings, decisions noted)</span>

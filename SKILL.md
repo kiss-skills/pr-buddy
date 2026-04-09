@@ -10,7 +10,7 @@ argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
   author: kiss-skills
-  version: 0.2.0
+  version: 0.3.0
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 
@@ -51,13 +51,53 @@ Do not output anything until Station 1.
 
 ---
 
-### Inline command — `tree` / `diff changes`
+### Mascot transition
 
-At **any point** during the walkthrough, if the reviewer types any of the following trigger
-words, render the change tree and then **resume from exactly where you were** — do not
+At the start of each station (1–5) and before the Phase 2 announcement, output this pixel-art
+dog as a transition signal, followed by a blank line and the station divider:
+
+```
+  / \__
+ (    @\___
+ /         O
+/   (_____/
+/_____/   U
+```
+
+Output the dog art as plain text (no code block wrapper), then the divider on the next line.
+Example full transition block for Station 2:
+
+```
+  / \__
+ (    @\___
+ /         O
+/   (_____/
+/_____/   U
+
+── station 2 · architecture ─────────────────────────────────────────
+```
+
+The mascot is a transition signal, not decoration — only emit it at station openings and the
+Phase 2 handoff, never mid-station.
+
+---
+
+### Inline tree — available any time
+
+At **any point** during the walkthrough, if the reviewer uses any of the following words or
+phrases, render the change tree and then **resume from exactly where you were** — do not
 advance the station.
 
-Triggers: `tree`, `diff changes`, `diff`, `changes`, `worktree`, `files`
+Keyword triggers: `tree`, `diff changes`, `diff`, `changes`, `worktree`, `files`
+
+Natural language triggers: *"show me the files"*, *"what files are we looking at"*, *"remind
+me which files"*, *"what's changed"*, *"which files are there"*, *"can I see the tree"*,
+*"list the files"*, *"what are the files again"*, or any phrasing expressing intent to see
+the changed file structure.
+
+**State preservation rule**: rendering the tree never changes session state. The current
+station, all file walkthrough tracker marks (`[x]`/`[ ]`), and all discussion context are
+fully preserved. After rendering, resume with: _"Where were we — ready to go on?"_
 
 Render format:
 
@@ -95,6 +135,8 @@ Work through each station in sequence. At each station:
 
 **Station 1 — Goal**
 
+Begin with the mascot transition (see above), using the divider `── station 1 · goal`.
+
 Before asking the question, print the PR title and description so the reviewer has them
 at hand without needing to open GitHub:
 
@@ -108,8 +150,8 @@ Author: <author>  ·  <baseRef> ← <headRef>
 
 Then ask:
 
-> "Based on the title and description, what problem do you think this PR is solving? What's
-> the outcome the author was aiming for?"
+> **"Based on the title and description, what problem do you think this PR is solving? What's
+> the outcome the author was aiming for?"**
 
 After the reviewer answers: confirm, correct, or sharpen their framing. State the actual goal
 in one sentence.
@@ -118,8 +160,23 @@ in one sentence.
 
 **Station 2 — Architecture**
 
-> "Here are the changed files: `[list files]`. Which file do you think is the entry point?
-> Walk me through your mental model — how do these changes fit together?"
+Begin with the mascot transition (see above), using the divider `── station 2 · architecture`.
+
+Auto-render the full change tree immediately after the transition — do not wait for a trigger.
+The tree grounds the architecture question in the actual file structure:
+
+```
+Changed files  (+<total additions> / -<total deletions>)
+──────────────────────────────────────────────────────
+<directory tree with annotations>
+──────────────────────────────────────────────────────
+  <N> dirs · <N> files · +<N> / -<N> total
+```
+
+Then ask:
+
+> **"Which file is the entry point? Walk me through your mental model — how do these changes
+> fit together?"**
 
 After the reviewer answers: draw the actual call/data flow from the diff. Highlight anything
 that surprised you.
@@ -144,11 +201,23 @@ was missed in the initial triage.
 
 **Station 3 — Decisions**
 
-Pick 2–3 notable choices from the diff (algorithm selection, API design, naming, a structural
-trade-off). For each:
+Begin with the mascot transition (see above), using the divider `── station 3 · decisions`.
 
-> "The author chose [X]. What would you have done differently, if anything? Why do you think
-> they made this choice?"
+Re-print the file walkthrough tracker in its current state before asking any question — this
+grounds the decisions discussion in the file structure the reviewer already traced:
+
+```
+File walkthrough
+  [x] src/auth/middleware.ts    — entry point (discussed)
+  [x] src/auth/session.ts       — new module (discussed)
+  [ ] src/utils/token.ts        — key decision ← focus here
+```
+
+Pick 2–3 notable choices from the diff (algorithm selection, API design, naming, a structural
+trade-off). For each, reference the file it lives in (from the tracker above):
+
+> **"In `<file>`, the author chose [X]. What would you have done differently, if anything?
+> Why do you think they made this choice?"**
 
 After the reviewer answers: share your reading of the trade-off and any implications you see.
 
@@ -159,8 +228,10 @@ on what makes a decision worth discussing.
 
 **Station 4 — Risk**
 
-> "If you had to name one thing that could go wrong with this PR in production — an edge case,
-> a race condition, a missing test, a performance concern — what would it be?"
+Begin with the mascot transition (see above), using the divider `── station 4 · risk`.
+
+> **"If you had to name one thing that could go wrong with this PR in production — an edge
+> case, a race condition, a missing test, a performance concern — what would it be?"**
 
 After the reviewer answers: surface the risk you identified from the diff. Compare notes.
 
@@ -168,8 +239,10 @@ After the reviewer answers: surface the risk you identified from the diff. Compa
 
 **Station 5 — Ownership**
 
-> "Could you explain this PR to a teammate right now, confidently? What, if anything, are you
-> still unsure about?"
+Begin with the mascot transition (see above), using the divider `── station 5 · ownership`.
+
+> **"Could you explain this PR to a teammate right now, confidently? What, if anything, are
+> you still unsure about?"**
 
 **Do not proceed to Phase 2 until the reviewer confirms they feel ready.**
 
@@ -209,7 +282,8 @@ PHASE_1_CONTEXT:
 
 #### 2c — Announce and invoke sub-agents with context
 
-Before launching the sub-agents, output the following to the reviewer:
+Before launching the sub-agents, output the mascot transition using the divider
+`── phase 2 · automated checks`, then the announcement:
 
 > Now I'm going to call **pr-review-toolkit** — considering all the input you've shared:
 > the goal you identified, the entry point we traced, the decisions we weighed, and the
@@ -262,9 +336,14 @@ Only post if the reviewer explicitly confirms.
 
 ## Output format
 
-- **Station prompts**: plain prose questions, one at a time, unformatted
+- **Mascot transitions**: emit the pixel-art dog + station divider before opening each station
+  (1–5) and before the Phase 2 announcement; never mid-station
+- **Main questions**: the question the reviewer must answer is always `**bold**`; surrounding
+  explanatory prose is plain
 - **Station reveals**: 1–3 sentence responses after the reviewer answers; cite specific lines
   from the diff when relevant
+- **Station 2 tree**: auto-rendered at station open — no trigger needed
+- **Station 3 tracker**: re-print file walkthrough tracker (current state) before questions
 - **Phase 2**: sub-agents run with Phase 1 context injected — no output until all complete
 - **Final comment**: a fenced markdown block combining reviewer understanding + toolkit findings, ready to post or copy-paste
 
