@@ -10,7 +10,7 @@ argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
   author: kiss-skills
-  version: 0.4.0
+  version: 0.4.1
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 

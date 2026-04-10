@@ -3,6 +3,11 @@
 All plain-text output uses ANSI escape codes. Do **not** apply ANSI inside fenced code blocks.
 Emit every example below as **plain text** — do not wrap in a code block when outputting.
 
+> **CRITICAL — emit the actual ESC byte, not the literal `\033`**
+> Every `\033` in these examples represents the ESC character (U+001B, hex 0x1B).
+> When outputting, your response must contain the **real ESC byte** — not the four characters `\`, `0`, `3`, `3`.
+> Outputting `\033[32m` as literal text produces no color. Outputting the actual ESC byte followed by `[32m` produces green.
+
 ## Color palette
 
 | Element | ANSI code | Appearance |
