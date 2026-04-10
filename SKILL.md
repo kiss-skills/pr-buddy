@@ -10,7 +10,7 @@ argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
   author: kiss-skills
-  version: 0.3.1
+  version: 0.4.0
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 
@@ -18,236 +18,127 @@ metadata:
 
 ## When to use
 
-Use this skill when you are about to review a pull request and want to actually build a mental
-model of the changes — not just scan for obvious issues and click "Approve".
+Use when reviewing a PR where you want to build a real mental model — not rubber-stamp it.
 
-This is the right skill when:
-- The PR touches areas of the codebase you are not deeply familiar with
-- The PR is large or architecturally significant
-- You sense you are about to rubber-stamp something without truly understanding it
-- You want to pair with an AI to walk through the changes together before running automated checks
+Right for: unfamiliar codebase areas, large or architectural changes, any time you sense you're
+about to approve without truly understanding. Skip for trivial PRs (typos, dependency bumps,
+config-only) where the diff is self-evident.
 
-This is **not** needed for trivial PRs (typos, dependency bumps, config-only changes) where
-the diff is self-evident.
-
-See [references/cognitive-debt.md](references/cognitive-debt.md) for context on the problem
-this skill addresses.
+See [references/cognitive-debt.md](references/cognitive-debt.md) for background.
 
 ## Procedure
 
-### Pre-phase (silent — do not output yet)
+### Pre-phase (silent)
 
-Fetch the PR metadata and diff silently:
+Fetch the PR metadata and diff silently — output nothing until Station 1:
 
 ```
 gh pr view <PR> --json number,title,body,author,baseRefName,headRefName,files,additions,deletions
 gh pr diff <PR>
 ```
 
-Build an internal mental model: understand the goal, identify the entry point, note 2–3
-interesting decisions in the diff, spot the most plausible failure mode.
-
-Do not output anything until Station 1.
+Build an internal mental model: goal, entry point, 2–3 interesting decisions, most plausible
+failure mode.
 
 ---
 
 ### Mascot transition
 
-At the start of each station (1–5) and before the Phase 2 announcement, output this pixel-art
-dog as a transition signal, followed by a blank line and the station divider:
+Before each station (1–5) and before Phase 2, emit the pixel-art dog + station divider as
+plain text (no code block). Mascot in orange, divider in cyan.
+See [references/terminal-colors.md](references/terminal-colors.md) for the exact render format
+and all station divider labels.
 
-```
-  / ╲--
- (    @╲---
- /         O
-/   (-----/
-/-----/   U
-```
-
-Output the dog art as plain text (no code block wrapper), then the divider on the next line.
-Example full transition block for Station 2:
-
-```
-  / ╲--
- (    @╲---
- /         O
-/   (-----/
-/-----/   U
-
-── station 2 · architecture ─────────────────────────────────────────
-```
-
-The mascot is a transition signal, not decoration — only emit it at station openings and the
-Phase 2 handoff, never mid-station.
+Emit only at station openings and the Phase 2 handoff — never mid-station.
 
 ---
 
 ### Inline tree — available any time
 
-At **any point** during the walkthrough, if the reviewer uses any of the following words or
-phrases, render the change tree and then **resume from exactly where you were** — do not
-advance the station.
+If the reviewer asks to see the files ("tree", "show me the files", "what's changed", etc.),
+render the change tree and **resume from exactly where you were** — do not advance the station.
 
-Keyword triggers: `tree`, `diff changes`, `diff`, `changes`, `worktree`, `files`
+Session state is fully preserved (station, tracker marks, discussion context). After rendering,
+say: _"Where were we — ready to go on?"_
 
-Natural language triggers: *"show me the files"*, *"what files are we looking at"*, *"remind
-me which files"*, *"what's changed"*, *"which files are there"*, *"can I see the tree"*,
-*"list the files"*, *"what are the files again"*, or any phrasing expressing intent to see
-the changed file structure.
-
-**State preservation rule**: rendering the tree never changes session state. The current
-station, all file walkthrough tracker marks (`[x]`/`[ ]`), and all discussion context are
-fully preserved. After rendering, resume with: _"Where were we — ready to go on?"_
-
-Render format:
-
-```
-Changed files  (+<total additions> / -<total deletions>)
-──────────────────────────────────────────────────────
-src/
-  auth/
-    middleware.ts        +42 / -8    ← entry point
-    session.ts           +15 / -0
-  utils/
-    token.ts             +6  / -12   ← key decision (Station 3)
-tests/
-  auth.test.ts           +30 / -2
-──────────────────────────────────────────────────────
-  3 dirs · 5 files · +93 / -22 total
-```
-
-Annotate key files with a short inline note (e.g. `← entry point`, `← new module`,
-`← deleted`, `← most changed`) derived from what you have built so far. Keep annotations
-to one short phrase. If the session is still early, annotate conservatively.
-
-After rendering, prompt the reviewer to continue: _"Where were we — ready to go on?"_
+Render the tree as plain text with ANSI colors.
+See [references/terminal-colors.md](references/terminal-colors.md) for the exact format.
 
 ---
 
 ### Phase 1 — Socratic Walkthrough (5 stations)
 
-Work through each station in sequence. At each station:
-1. Ask the question
-2. **Wait for the reviewer's response** before continuing
-3. Briefly reveal your own reading of the PR on that dimension (1–3 sentences, no spoilers for later stations)
+At each station: ask → wait for response → reveal your reading (1–3 sentences, no spoilers).
+
+All questions use the **Question UX format** (dim separator + bold yellow `▶`).
+See [references/terminal-colors.md](references/terminal-colors.md).
 
 ---
 
-**Station 1 — Goal**
+**Station 1 — Goal** · divider: `── station 1 · goal`
 
-Begin with the mascot transition (see above), using the divider `── station 1 · goal`.
-
-Before asking the question, print the PR title and description so the reviewer has them
-at hand without needing to open GitHub:
+Print the PR header before asking:
 
 ```
 PR #<number> — <title>
 Author: <author>  ·  <baseRef> ← <headRef>
 
 <body>
-──────────────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
-Then ask:
+Ask: _"Based on the title and description, what problem do you think this PR is solving?
+What's the outcome the author was aiming for?"_
 
-> **"Based on the title and description, what problem do you think this PR is solving? What's
-> the outcome the author was aiming for?"**
-
-After the reviewer answers: confirm, correct, or sharpen their framing. State the actual goal
-in one sentence.
+Reveal: confirm, correct, or sharpen. State the goal in one sentence.
 
 ---
 
-**Station 2 — Architecture**
+**Station 2 — Architecture** · divider: `── station 2 · architecture`
 
-Begin with the mascot transition (see above), using the divider `── station 2 · architecture`.
+Auto-render the change tree immediately after the mascot transition (no trigger needed).
 
-Auto-render the full change tree immediately after the transition — do not wait for a trigger.
-The tree grounds the architecture question in the actual file structure:
+Ask: _"Which file is the entry point? Walk me through your mental model — how do these changes
+fit together?"_
 
-```
-Changed files  (+<total additions> / -<total deletions>)
-──────────────────────────────────────────────────────
-<directory tree with annotations>
-──────────────────────────────────────────────────────
-  <N> dirs · <N> files · +<N> / -<N> total
-```
+Reveal: draw the actual call/data flow from the diff. Note anything surprising.
 
-Then ask:
-
-> **"Which file is the entry point? Walk me through your mental model — how do these changes
-> fit together?"**
-
-After the reviewer answers: draw the actual call/data flow from the diff. Highlight anything
-that surprised you.
-
-Then open a **file walkthrough tracker** — a live TODO list covering the **main files only**
-(skip test files, generated files, lock files, and trivial config changes). Show it as a
-checklist and update it as the conversation progresses through the diff:
-
-```
-File walkthrough
-  [ ] src/auth/middleware.ts    — entry point
-  [ ] src/auth/session.ts       — new module
-  [ ] src/utils/token.ts        — key decision
-```
-
-Mark a file `[x]` once you and the reviewer have discussed its purpose and changes at any
-station. Keep the list visible (re-print it when it changes) so the reviewer always knows
-what's left. Do not add files to this list mid-session unless a genuinely important file
-was missed in the initial triage.
+Open the **file walkthrough tracker** (main files only — skip tests, generated, lock, trivial
+config). Re-print it whenever a file is marked done. See [references/terminal-colors.md](references/terminal-colors.md)
+for the colored render format.
 
 ---
 
-**Station 3 — Decisions**
+**Station 3 — Decisions** · divider: `── station 3 · decisions`
 
-Begin with the mascot transition (see above), using the divider `── station 3 · decisions`.
+Re-print the tracker first, then pick 2–3 notable choices from the diff:
 
-Re-print the file walkthrough tracker in its current state before asking any question — this
-grounds the decisions discussion in the file structure the reviewer already traced:
+Ask: _"In `<file>`, the author chose [X]. What would you have done differently, if anything?
+Why do you think they made this choice?"_
 
-```
-File walkthrough
-  [x] src/auth/middleware.ts    — entry point (discussed)
-  [x] src/auth/session.ts       — new module (discussed)
-  [ ] src/utils/token.ts        — key decision ← focus here
-```
+Reveal: your reading of the trade-off and its implications.
 
-Pick 2–3 notable choices from the diff (algorithm selection, API design, naming, a structural
-trade-off). For each, reference the file it lives in (from the tracker above):
-
-> **"In `<file>`, the author chose [X]. What would you have done differently, if anything?
-> Why do you think they made this choice?"**
-
-After the reviewer answers: share your reading of the trade-off and any implications you see.
-
-See [references/walkthrough-principles.md](references/walkthrough-principles.md) for guidance
-on what makes a decision worth discussing.
+See [references/walkthrough-principles.md](references/walkthrough-principles.md) for what
+makes a decision worth discussing.
 
 ---
 
-**Station 4 — Risk**
+**Station 4 — Risk** · divider: `── station 4 · risk`
 
-Begin with the mascot transition (see above), using the divider `── station 4 · risk`.
+Ask: _"If you had to name one thing that could go wrong in production — edge case, race
+condition, missing test, performance concern — what would it be?"_
 
-> **"If you had to name one thing that could go wrong with this PR in production — an edge
-> case, a race condition, a missing test, a performance concern — what would it be?"**
-
-After the reviewer answers: surface the risk you identified from the diff. Compare notes.
+Reveal: surface the risk you identified from the diff. Compare notes.
 
 ---
 
-**Station 5 — Ownership**
+**Station 5 — Ownership** · divider: `── station 5 · ownership`
 
-Begin with the mascot transition (see above), using the divider `── station 5 · ownership`.
+Ask: _"Could you explain this PR to a teammate right now, confidently? What, if anything,
+are you still unsure about?"_
 
-> **"Could you explain this PR to a teammate right now, confidently? What, if anything, are
-> you still unsure about?"**
-
-**Do not proceed to Phase 2 until the reviewer confirms they feel ready.**
-
-If they express uncertainty, offer to revisit the relevant station or read a specific section
-of the diff together.
+**Do not proceed to Phase 2 until the reviewer confirms they feel ready.** If uncertain,
+offer to revisit the relevant station or re-read a specific section of the diff.
 
 ---
 
@@ -255,96 +146,90 @@ of the diff together.
 
 #### 2a — Check toolkit availability
 
-Check whether `pr-review-toolkit` sub-agents are available. If not, tell the reviewer:
+If `pr-review-toolkit` is not installed:
 
 > "Phase 2 requires `pr-review-toolkit`. Install it with:
 > ```
 > claude skill add manuartero/pr-review-toolkit
 > ```
-> Then re-run `/pr-buddy <PR>` to continue from Phase 2."
+> Then re-run `/pr-buddy <PR>` to continue."
 
-Do not continue to the Final Summary until Phase 2 has run or the reviewer explicitly skips it.
+Do not proceed until it's available or the reviewer explicitly skips Phase 2.
 
-#### 2b — Build Phase 1 context block
+#### 2b — Build Phase 1 context (two artifacts, internal — never shown)
 
-Before invoking any sub-agent, distill the walkthrough into a structured context block
-(internal — do not output this to the reviewer):
-
+**Artifact 1 — Structured block:**
 ```
 PHASE_1_CONTEXT:
-  goal:          <one sentence agreed in Station 1>
-  entry_point:   <file identified in Station 2>
-  decisions:     [<decision and trade-off from Station 3>, ...]
+  goal:          <one sentence from Station 1>
+  entry_point:   <file from Station 2>
+  decisions:     [<decision + trade-off from Station 3>, ...]
   reviewer_risk: <risk the reviewer named in Station 4>
   skill_risk:    <risk Claude identified in Station 4>
-  confidence:    <reviewer's self-reported confidence from Station 5>
+  confidence:    <reviewer's Station 5 self-report>
 ```
 
-#### 2c — Announce and invoke sub-agents with context
-
-Before launching the sub-agents, output the mascot transition using the divider
-`── phase 2 · automated checks`, then the announcement:
-
-> Now I'm going to call **pr-review-toolkit** — considering all the input you've shared:
-> the goal you identified, the entry point we traced, the decisions we weighed, and the
-> risks you named. The automated checks will be focused by that understanding, not run
-> blind.
-
-Then run the following sub-agents in parallel, injecting the Phase 1 context into each prompt:
-
-- **`pr-review-toolkit:code-reviewer`** — provide the diff and note: "The reviewer traced
-  the entry point as `<entry_point>`. The following decisions were discussed as known
-  trade-offs: `<decisions>`. Focus your review on correctness and adherence to project
-  guidelines, treating those decisions as intentional choices."
-
-- **`pr-review-toolkit:silent-failure-hunter`** — provide the diff and note: "The reviewer
-  identified `<reviewer_risk>` as the main risk. Focus on the failure paths in that area."
-
-- **`pr-review-toolkit:pr-test-analyzer`** — provide the diff and note: "Check whether the
-  scenarios discussed as risks (`<reviewer_risk>`, `<skill_risk>`) have test coverage."
+**Artifact 2 — Reviewer narrative:** 3–5 prose sentences synthesizing the walkthrough
+(what the reviewer said, what surprised them, concerns voiced, what Claude observed,
+confidence level). This is also the seed for `## 1. [reviewer]` in the final comment.
 
 See [references/pr-review-toolkit-bridge.md](references/pr-review-toolkit-bridge.md) for
-framing patterns and escalation rules.
+the narrative format and an example.
+
+#### 2c — Phase 2 menu · divider: `── phase 2 · automated checks`
+
+Ask: _"How would you like to proceed?"_
+
+```
+  [1]  full review   — code-reviewer · silent-failure-hunter · pr-test-analyzer
+  [2]  code only     — code-reviewer
+  [3]  stop here     — finalize with walkthrough findings only
+```
+
+Branch on selection:
+
+**[1] Full review** — run all three sub-agents **in parallel**, each receiving the diff and
+both Phase 1 artifacts. See [references/pr-review-toolkit-bridge.md](references/pr-review-toolkit-bridge.md)
+for the exact prompt templates, escalation rules, and framing patterns.
+Template: [references/output-template-full.md](references/output-template-full.md)
+
+**[2] Code only** — run `pr-review-toolkit:code-reviewer` only (same prompt). Final comment
+includes only `### 2.1. [code-reviewer]`; omit 2.2 and 2.3.
+Template: [references/output-template-full.md](references/output-template-full.md) (adapted)
+
+**[3] Stop here** — skip agents; go directly to Final Summary.
+Template: [references/output-template-walkthrough.md](references/output-template-walkthrough.md)
+
+Before launching agents ([1] or [2]) announce:
+> "Now running **pr-review-toolkit** — with the full walkthrough context injected."
+
+Wait for all agents to complete before synthesizing.
 
 ---
 
-### Final Summary — Combined PR Comment
+### Final Summary
 
-Synthesize the Phase 1 context block and the sub-agent findings into a single ready-to-post
-PR comment:
+Synthesize Phase 1 artifacts and agent findings into a ready-to-post PR comment.
 
-```markdown
-**Review (walkthrough + automated checks)**
+**The walkthrough is the primary voice.** `## 1. [reviewer]` is always the fullest section —
+4–7 sentences as an informed co-reviewer. Agent findings are supporting evidence. The
+`# Summary` (Blocking / Requests / Nice to Have) is written from the walkthrough lens.
 
-**Understanding:**
-- **Goal:** <from Station 1>
-- **Key decision:** <most significant choice from Station 3, and the trade-off>
-- **Main risk identified:** <from Station 4 — reviewer's or Claude's, whichever is sharper>
+Then ask: _"Want me to post this? I'll run `gh pr comment <PR> --body '...'`"_
 
-**Automated findings:**
-- [code-reviewer] <finding — anchor to walkthrough context where relevant>
-- [silent-failure-hunter] <finding>
-- [pr-test-analyzer] <finding>
+Only post on explicit confirmation.
 
-**Verdict:** Approve / Request changes / Comment
-```
-
-Then ask the reviewer:
-> "Want me to post this? I'll run `gh pr comment <PR> --body '...'`"
-
-Only post if the reviewer explicitly confirms.
+---
 
 ## Output format
 
-- **Mascot transitions**: emit the pixel-art dog + station divider before opening each station
-  (1–5) and before the Phase 2 announcement; never mid-station
-- **Main questions**: the question the reviewer must answer is always `**bold**`; surrounding
-  explanatory prose is plain
-- **Station reveals**: 1–3 sentence responses after the reviewer answers; cite specific lines
-  from the diff when relevant
-- **Station 2 tree**: auto-rendered at station open — no trigger needed
-- **Station 3 tracker**: re-print file walkthrough tracker (current state) before questions
-- **Phase 2**: sub-agents run with Phase 1 context injected — no output until all complete
-- **Final comment**: a fenced markdown block combining reviewer understanding + toolkit findings, ready to post or copy-paste
+| Element | Rule |
+|---------|------|
+| Mascot + dividers | Orange/cyan ANSI, plain text — see [terminal-colors.md](references/terminal-colors.md) |
+| Change tree | ANSI colored, plain text — see [terminal-colors.md](references/terminal-colors.md) |
+| File tracker | ANSI colored, plain text — see [terminal-colors.md](references/terminal-colors.md) |
+| Questions | Dim separator + `▶` — see [terminal-colors.md](references/terminal-colors.md) |
+| Station reveals | 1–3 sentences, plain prose, cite diff lines when relevant |
+| Final comment | Fenced markdown block, structure per output template above |
 
 See [assets/example-session.md](assets/example-session.md) for a full annotated example.
