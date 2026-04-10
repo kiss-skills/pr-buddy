@@ -1,30 +1,7 @@
-# Terminal Colors & Render Specs
+# Terminal Render Specs
 
-All plain-text output uses ANSI escape codes. Do **not** apply ANSI inside fenced code blocks.
-Emit every example below as **plain text** — do not wrap in a code block when outputting.
-
-> **CRITICAL — emit the actual ESC byte, not the literal `\033`**
-> Every `\033` in these examples represents the ESC character (U+001B, hex 0x1B).
-> When outputting, your response must contain the **real ESC byte** — not the four characters `\`, `0`, `3`, `3`.
-> Outputting `\033[32m` as literal text produces no color. Outputting the actual ESC byte followed by `[32m` produces green.
-
-## Color palette
-
-| Element | ANSI code | Appearance |
-|---------|-----------|-----------|
-| Mascot | `\033[38;5;214m` … `\033[0m` | orange |
-| Station dividers | `\033[36m` … `\033[0m` | cyan |
-| Directory names in tree | `\033[1;34m` … `\033[0m` | bold blue |
-| File names in tree | `\033[1m` … `\033[0m` | bold |
-| Annotations (`← entry point`) | `\033[90m` … `\033[0m` | dark gray |
-| `+N` additions | `\033[32m` … `\033[0m` | green |
-| `-N` deletions | `\033[31m` … `\033[0m` | red |
-| Tree / PR-header separator lines | `\033[90m` … `\033[0m` | dim |
-| Tracker `[x]` | `\033[32m[x]\033[0m` | green |
-| Tracker `[ ]` | `\033[90m[ ]\033[0m` | dim |
-| Question separator | `\033[90m` … `\033[0m` | dim |
-| Question arrow `▶` | `\033[1;33m▶\033[0m` | bold yellow |
-| Reset (always close every color) | `\033[0m` | — |
+All output is **plain text only** — no ANSI escape codes.
+Emit every example below as plain text; do not wrap in a code block when outputting.
 
 ---
 
@@ -33,13 +10,13 @@ Emit every example below as **plain text** — do not wrap in a code block when 
 Emit as plain text (not inside a code block). Example for Station 2:
 
 ```
-\033[38;5;214m  / ╲--
- (    @╲---
+  / \__
+ (    @\___
  /         O
-/   (-----/
-/-----/   U\033[0m
+/   (_____/
+/_____/   U
 
-\033[36m── station 2 · architecture ─────────────────────────────────────────\033[0m
+── station 2 · architecture ─────────────────────────────────────────
 ```
 
 Station divider labels: `station 1 · goal`, `station 2 · architecture`,
@@ -54,21 +31,21 @@ Emit as plain text (not inside a code block). Fill in real file paths and stats 
 
 ```
 Changed files  (+<total additions> / -<total deletions>)
-\033[90m──────────────────────────────────────────────────────\033[0m
-\033[1;34msrc/\033[0m
-  \033[1;34mauth/\033[0m
-    \033[1mmiddleware.ts\033[0m        \033[32m+42\033[0m / \033[31m-8\033[0m    \033[90m← entry point\033[0m
-    \033[1msession.ts\033[0m           \033[32m+15\033[0m / \033[31m-0\033[0m
-  \033[1;34mutils/\033[0m
-    \033[1mtoken.ts\033[0m             \033[32m+6\033[0m  / \033[31m-12\033[0m   \033[90m← key decision (Station 3)\033[0m
-\033[1;34mtests/\033[0m
-  \033[1mauth.test.ts\033[0m           \033[32m+30\033[0m / \033[31m-2\033[0m
-\033[90m──────────────────────────────────────────────────────\033[0m
-  3 dirs · 5 files · \033[32m+93\033[0m / \033[31m-22\033[0m total
+──────────────────────────────────────────────────────
+src/
+  auth/
+    middleware.ts        +42 / -8    ← entry point
+    session.ts           +15 / -0
+  utils/
+    token.ts             +6  / -12   ← key decision (Station 3)
+tests/
+  auth.test.ts           +30 / -2
+──────────────────────────────────────────────────────
+  3 dirs · 5 files · +93 / -22 total
 ```
 
-Annotations in dark gray (`\033[90m`): `← entry point`, `← new module`, `← deleted`,
-`← most changed`. One phrase per file. Annotate conservatively early in the session.
+Annotations (`←`): `← entry point`, `← new module`, `← deleted`, `← most changed`.
+One phrase per file. Annotate conservatively early in the session.
 
 ---
 
@@ -77,10 +54,10 @@ Annotations in dark gray (`\033[90m`): `← entry point`, `← new module`, `←
 Emit as plain text (not inside a code block). Re-print whenever a file is marked done.
 
 ```
-\033[1mFile walkthrough\033[0m
-  \033[90m[ ]\033[0m \033[1msrc/auth/middleware.ts\033[0m    \033[90m— entry point\033[0m
-  \033[32m[x]\033[0m \033[1msrc/auth/session.ts\033[0m       \033[90m— new module (discussed)\033[0m
-  \033[90m[ ]\033[0m \033[1msrc/utils/token.ts\033[0m        \033[90m— key decision\033[0m
+File walkthrough
+  [x] src/auth/middleware.ts    — entry point (discussed)
+  [ ] src/auth/session.ts       — new module
+  [ ] src/utils/token.ts        — key decision
 ```
 
 Cover main files only — skip tests, generated files, lock files, trivial config.
@@ -93,7 +70,7 @@ Every reviewer-facing question (station questions, Phase 2 menu, post-confirmati
 Emit as plain text (not blockquote, not code block). Blank line after.
 
 ```
-\033[90m────────────────────────────────────────────────────\033[0m
-\033[1;33m▶\033[0m  <question text>
+────────────────────────────────────────────────────
+▶  <question text>
 
 ```

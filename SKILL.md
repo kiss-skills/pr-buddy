@@ -10,7 +10,7 @@ argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
   author: kiss-skills
-  version: 0.4.1
+  version: 0.4.2
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 
@@ -45,7 +45,7 @@ failure mode.
 ### Mascot transition
 
 Before each station (1–5) and before Phase 2, emit the pixel-art dog + station divider as
-plain text (no code block). Mascot in orange, divider in cyan.
+plain text (no code block).
 See [references/terminal-colors.md](references/terminal-colors.md) for the exact render format
 and all station divider labels.
 
@@ -225,10 +225,10 @@ Only post on explicit confirmation.
 
 | Element | Rule |
 |---------|------|
-| Mascot + dividers | Orange/cyan ANSI, plain text — see [terminal-colors.md](references/terminal-colors.md) |
-| Change tree | ANSI colored, plain text — see [terminal-colors.md](references/terminal-colors.md) |
-| File tracker | ANSI colored, plain text — see [terminal-colors.md](references/terminal-colors.md) |
-| Questions | Dim separator + `▶` — see [terminal-colors.md](references/terminal-colors.md) |
+| Mascot + dividers | Plain text — see [terminal-colors.md](references/terminal-colors.md) |
+| Change tree | Plain text — see [terminal-colors.md](references/terminal-colors.md) |
+| File tracker | Plain text — see [terminal-colors.md](references/terminal-colors.md) |
+| Questions | `▶` separator — see [terminal-colors.md](references/terminal-colors.md) |
 | Station reveals | 1–3 sentences, plain prose, cite diff lines when relevant |
 | Final comment | Fenced markdown block, structure per output template above |
 
