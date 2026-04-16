@@ -62,11 +62,11 @@ The skill says nothing yet.
 ```
 Changed files  (+400 / -0)
 ──────────────────────────────────────────────────────
-skills/pgm/jira-ticket-automator/
-  SKILL.md                          +246 / -0    ← entry point
-  README.md                         +77  / -0    ← human-facing docs
-  references/
-    jira-field-mapping.md           +55  / -0    ← field reference
+---skills/pgm/jira-ticket-automator
+  |---- SKILL.md                    +246 / -0    ← entry point
+  |---- README.md                   +77  / -0    ← human-facing docs
+  |---- references
+          |---- jira-field-mapping.md  +55 / -0  ← field reference
 INDEX.md                            +1   / -0    ← catalog pointer
 catalog.json                        +21  / -0    ← catalog entry
 ──────────────────────────────────────────────────────
@@ -137,7 +137,7 @@ catalog.json                        +21  / -0    ← catalog entry
 
 ---
 
-## Station 4 — Risk
+## Station 5 — Risk
 
 **Skill:**
 > If you had to name one thing that could go wrong with this PR in production — an edge case, a race condition, a missing test, a performance concern — what would it be?
@@ -164,7 +164,7 @@ catalog.json                        +21  / -0    ← catalog entry
 
 ---
 
-## Station 5 — Ownership
+## Station 6 — Ownership
 
 **Skill:**
 > Could you explain this PR to a teammate right now, confidently? What, if anything, are you still unsure about?

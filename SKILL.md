@@ -10,7 +10,7 @@ argument-hint: "<pr_number_or_branch_or_url>"
 compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
 metadata:
   author: kiss-skills
-  version: 0.4.2
+  version: 0.5.0
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 
@@ -111,7 +111,7 @@ for the colored render format.
 
 **Station 3 — Decisions** · divider: `── station 3 · decisions`
 
-Re-print the tracker first, then pick 2–3 notable choices from the diff:
+Pick 2–3 notable choices from the diff:
 
 Ask: _"In `<file>`, the author chose [X]. What would you have done differently, if anything?
 Why do you think they made this choice?"_
@@ -123,7 +123,91 @@ makes a decision worth discussing.
 
 ---
 
-**Station 4 — Risk** · divider: `── station 4 · risk`
+**Station 4 — Code Tour** · divider: `── station 4 · code tour`
+
+This station always runs. Emit the Station 4 mascot + divider, then fetch and render
+function signatures for every main file in the walkthrough tracker.
+
+**Fetching file content:**
+
+For each file in the tracker, fetch its content from the PR head:
+
+```
+gh api repos/{owner}/{repo}/contents/{path}?ref={headRefName}
+```
+
+Decode the base64 `content` field. Fetch one file at a time. Use `owner`, `repo`, and
+`headRefName` from the PR metadata already fetched in the pre-phase.
+
+**Extracting signatures by file extension:**
+
+| Extension | Extract |
+|-----------|---------|
+| `.js` `.mjs` `.cjs` | `function`, `export function`, `export default function`, `const x =`, `export const x =` — first line only |
+| `.ts` `.tsx` | Same as JS + type params + return type annotation — first line only |
+| `.py` | `def`, `async def`, `class` — first line only |
+| `.go` | `func`, method receivers — first line only |
+| `.sh` `.bash` | `foo()` or `function foo()` — first line only |
+| `.md` | All `##` headings |
+| `.json` | Top-level keys as `key: <type>`, max 10 |
+| Other | `(no signatures — unsupported format)` |
+
+Rules: Show only functions new or modified in the diff (include when unclear). First line
+verbatim, truncated at 120 chars + `…`. Skip unnamed callbacks, IIFEs, test-only helpers.
+If none found: `(no signatures found)`.
+
+**Render format** (plain text, no code fence):
+
+```
+Code tour
+──────────────────────────────────────────────────────
+---scripts
+  |---- deploy.mjs
+  |       · deployToEnvironment(env, options)
+  |       · rollback(deploymentId)
+  |---- validate.mjs
+          · validateSchema(input)
+---src
+  |---- auth/middleware.ts
+          · export async function authenticate(req: Request, res: Response): Promise<void>
+          · export function requireRole(role: string): Middleware
+README.md
+  · ## Overview
+  · ## Installation
+──────────────────────────────────────────────────────
+  N files · M signatures total
+```
+
+Bullet char: `·` (U+00B7). Spaces not tabs. No code fence.
+
+**After rendering, ask:**
+
+```
+────────────────────────────────────────────────────
+\033[94m▶  Does this give you a clear enough picture of the code structure?\033[0m
+
+   [1]  yes — move on to Station 5 · Risk     (default)
+   [2]  go deeper — walk me through the most interesting function
+```
+
+Affirmative / enter / "1" → proceed to Station 5.
+
+**[2] Deep dive** · divider: `── station 4b · deep dive`
+
+Skill picks the single most interesting function: highest churn in the diff, or most
+central to the PR goal if churn is equal. Do not ask the reviewer — pick and announce:
+
+> _"The most significant change is in `<file>` — `<function signature>`. Here's what it does:"_
+
+Narrate in 3–5 sentences: what it does (from signature + diff context, not body),
+what changed vs. before, why it matters to the PR goal. Do NOT show the function body.
+Do NOT paste code. Prose only.
+
+After narration, proceed directly to Station 5 — no further question.
+
+---
+
+**Station 5 — Risk** · divider: `── station 5 · risk`
 
 Ask: _"If you had to name one thing that could go wrong in production — edge case, race
 condition, missing test, performance concern — what would it be?"_
@@ -132,7 +216,7 @@ Reveal: surface the risk you identified from the diff. Compare notes.
 
 ---
 
-**Station 5 — Ownership** · divider: `── station 5 · ownership`
+**Station 6 — Ownership** · divider: `── station 6 · ownership`
 
 Ask: _"Could you explain this PR to a teammate right now, confidently? What, if anything,
 are you still unsure about?"_
@@ -164,14 +248,14 @@ PHASE_1_CONTEXT:
   goal:          <one sentence from Station 1>
   entry_point:   <file from Station 2>
   decisions:     [<decision + trade-off from Station 3>, ...]
-  reviewer_risk: <risk the reviewer named in Station 4>
-  skill_risk:    <risk Claude identified in Station 4>
-  confidence:    <reviewer's Station 5 self-report>
+  reviewer_risk: <risk the reviewer named in Station 5>
+  skill_risk:    <risk Claude identified in Station 5>
+  confidence:    <reviewer's Station 6 self-report>
 ```
 
 **Artifact 2 — Reviewer narrative:** 3–5 prose sentences synthesizing the walkthrough
 (what the reviewer said, what surprised them, concerns voiced, what Claude observed,
-confidence level). This is also the seed for `## 1. [reviewer]` in the final comment.
+confidence level). This is also the seed for `## [MANUAL REVIEW]` in the final comment.
 
 See [references/pr-review-toolkit-bridge.md](references/pr-review-toolkit-bridge.md) for
 the narrative format and an example.
@@ -211,9 +295,10 @@ Wait for all agents to complete before synthesizing.
 
 Synthesize Phase 1 artifacts and agent findings into a ready-to-post PR comment.
 
-**The walkthrough is the primary voice.** `## 1. [reviewer]` is always the fullest section —
-4–7 sentences as an informed co-reviewer. Agent findings are supporting evidence. The
-`# Summary` (Blocking / Requests / Nice to Have) is written from the walkthrough lens.
+**The walkthrough is the primary voice.** `## [MANUAL REVIEW]` is always the fullest section —
+4–7 sentences as an informed co-reviewer. Agent findings are supporting evidence and appear
+compressed under `## [AUTOMATED]`. The `# Summary` (Blocking / Requests / Nice to Have) is
+written from the walkthrough lens.
 
 Then ask: _"Want me to post this? I'll run `gh pr comment <PR> --body '...'`"_
 

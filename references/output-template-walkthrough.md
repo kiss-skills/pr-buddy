@@ -8,11 +8,11 @@ Use `<placeholder>` tokens — replace with actual walkthrough content when synt
 # Understanding `[walkthrough]`
 - **Goal:** <one-sentence goal agreed in Station 1>
 - **Key decisions:** <1–2 notable choices surfaced in Station 3, with their trade-offs>
-- **Main risk identified:** <sharpest risk from Station 4>
+- **Main risk identified:** <sharpest risk from Station 5>
 
 # Review Details
 
-## 1. `[reviewer]`
+## [MANUAL REVIEW]
 
 <Narrative synthesis of the full walkthrough — 4–7 sentences as an informed co-reviewer.
 Do not truncate or thin out this section just because no agents ran. Include:>
@@ -20,8 +20,8 @@ Do not truncate or thin out this section just because no agents ran. Include:>
 - What this PR is actually doing and why (beyond the title)
 - The code path traced: entry point → call flow → key interactions
 - Each notable decision from Station 3, with the trade-off and its implications
-- The risk(s) from Station 4 — what you and the reviewer named, and how serious they are
-- The reviewer's confidence level and anything that was still uncertain at Station 5
+- The risk(s) from Station 5 — what you and the reviewer named, and how serious they are
+- The reviewer's confidence level and anything that was still uncertain at Station 6
 
 # Summary
 
@@ -38,7 +38,7 @@ line: "Fix ...", "Add test for ...", "Remove ...". Empty if none.>
 
 ## Synthesis rule
 
-**`## 1. [reviewer]` is the entire review voice here.** Without automated agents, all
+**`## [MANUAL REVIEW]` is the entire review voice here.** Without automated agents, all
 findings come from the walkthrough conversation. Write it with the full weight of what
 was discussed — goal, architecture, decisions, risks, confidence — as a co-reviewer
 who traced the code, not as a summary of the chat.

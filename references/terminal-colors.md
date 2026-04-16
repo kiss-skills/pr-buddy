@@ -1,6 +1,6 @@
 # Terminal Render Specs
 
-All output is **plain text only** — no ANSI escape codes.
+All output is **plain text only** — **except question prompts**, which use ANSI bright blue (`\033[94m`).
 Emit every example below as plain text; do not wrap in a code block when outputting.
 
 ---
@@ -20,8 +20,8 @@ Emit as plain text (not inside a code block). Example for Station 2:
 ```
 
 Station divider labels: `station 1 · goal`, `station 2 · architecture`,
-`station 3 · decisions`, `station 4 · risk`, `station 5 · ownership`,
-`phase 2 · automated checks`.
+`station 3 · decisions`, `station 4 · code tour`, `station 4b · deep dive`,
+`station 5 · risk`, `station 6 · ownership`, `phase 2 · automated checks`.
 
 ---
 
@@ -32,20 +32,25 @@ Emit as plain text (not inside a code block). Fill in real file paths and stats 
 ```
 Changed files  (+<total additions> / -<total deletions>)
 ──────────────────────────────────────────────────────
-src/
-  auth/
-    middleware.ts        +42 / -8    ← entry point
-    session.ts           +15 / -0
-  utils/
-    token.ts             +6  / -12   ← key decision (Station 3)
-tests/
-  auth.test.ts           +30 / -2
+---src
+  |---- auth
+  |       |---- middleware.ts        +42 / -8    ← entry point
+  |       |---- session.ts           +15 / -0
+  |---- utils
+          |---- token.ts             +6  / -12   ← key decision
+---tests
+  |---- auth.test.ts           +30 / -2
 ──────────────────────────────────────────────────────
   3 dirs · 5 files · +93 / -22 total
 ```
 
-Annotations (`←`): `← entry point`, `← new module`, `← deleted`, `← most changed`.
-One phrase per file. Annotate conservatively early in the session.
+Tree format rules:
+- Root directories: `---dirname`
+- Files/subdirs under a directory: `  |---- name` (2-space indent per level)
+- Deeper nesting: extend the `|` pipe column (see `auth` example above)
+- Top-level files (no parent dir): list flat, no `|----`
+- Annotations (`←`) stay on the same line: `← entry point`, `← new module`, `← deleted`, `← most changed`
+- One annotation per file. Annotate conservatively early in the session.
 
 ---
 
@@ -69,8 +74,11 @@ Cover main files only — skip tests, generated files, lock files, trivial confi
 Every reviewer-facing question (station questions, Phase 2 menu, post-confirmation).
 Emit as plain text (not blockquote, not code block). Blank line after.
 
+The `▶` bullet and the full question text are wrapped in ANSI bright blue. The separator
+line stays plain.
+
 ```
 ────────────────────────────────────────────────────
-▶  <question text>
+\033[94m▶  <question text>\033[0m
 
 ```
