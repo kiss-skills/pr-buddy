@@ -304,7 +304,7 @@
 
   <!-- ── hero ── -->
   <div class="header">
-    <h1><code>/pr-buddy</code> <span style="font-size:1.1rem; font-weight:400; color:var(--fg-muted);">@0.4.2</span></h1>
+    <h1><code>/pr-buddy</code> <span style="font-size:1.1rem; font-weight:400; color:var(--fg-muted);">@0.5.0</span></h1>
     <p class="tagline">Understand the PR before you approve it.</p>
     <div class="cta-row">
       <a class="btn primary" href="#install">Install</a>
@@ -325,7 +325,7 @@
   <!-- ── solution ── -->
   <h2>Solution</h2>
   <p>
-    <code>/pr-buddy &lt;pr&gt;</code> walks you through a PR in 5 stations; <strong>you</strong> answer first, then the skill shows its reading.<br>
+    <code>/pr-buddy &lt;pr&gt;</code> walks you through a PR in 6 stations; <strong>you</strong> answer first, then the skill shows its reading.<br>
     Once you can explain the PR confidently, it <code>runs pr-review-toolkit</code> <strong>anchored to what you did discover</strong>.
   </p>
   <blockquote style="border-left: 2px solid var(--border); margin: 1rem 0 0; padding: 0.4rem 1rem; color: var(--fg-muted); font-size: 0.9rem;">
@@ -394,11 +394,11 @@
         <span class="t-line section">── station 2 · architecture ────────────────────────────────────</span>
         <span class="t-line skill">  Changed files  (+400 / -0)</span>
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
-        <span class="t-line skill">  skills/pgm/jira-ticket-automator/</span>
-        <span class="t-line skill">    SKILL.md                    +246 / -0    <span style="color:#c84820;">← entry point</span></span>
-        <span class="t-line skill">    README.md                   +77  / -0    ← human-facing docs</span>
-        <span class="t-line skill">    references/</span>
-        <span class="t-line skill">      jira-field-mapping.md     +55  / -0    ← field reference</span>
+        <span class="t-line skill">  ---skills/pgm/jira-ticket-automator</span>
+        <span class="t-line skill">    |---- SKILL.md              +246 / -0    <span style="color:#c84820;">← entry point</span></span>
+        <span class="t-line skill">    |---- README.md             +77  / -0    ← human-facing docs</span>
+        <span class="t-line skill">    |---- references</span>
+        <span class="t-line skill">            |---- jira-field-mapping.md  +55 / -0  ← field reference</span>
         <span class="t-line skill">  INDEX.md                      +1   / -0    ← catalog pointer</span>
         <span class="t-line skill">  catalog.json                  +21  / -0    ← catalog entry</span>
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
@@ -428,12 +428,6 @@
         <span class="t-line skill">/_____/   U</span>
         <span class="t-line blank"></span>
         <span class="t-line section">── station 3 · decisions ───────────────────────────────────────</span>
-        <span class="t-line skill">  File walkthrough</span>
-        <span class="t-line skill">    [x] SKILL.md                   — entry point (discussed)</span>
-        <span class="t-line skill">    [ ] README.md                  — human-facing docs</span>
-        <span class="t-line skill">    [ ] references/jira-field-mapping.md — field reference  <span style="color:#c84820;">← focus</span></span>
-        <span class="t-line skill">    [ ] INDEX.md / catalog.json    — registry</span>
-        <span class="t-line blank"></span>
         <span class="t-line skill">  Three notable choices in the diff:</span>
         <span class="t-line skill">  1. In SKILL.md: epic link via jira_create_issue_link, not customfield_10091</span>
         <span class="t-line skill">  2. In SKILL.md: issuetype ID "5" hardcoded in additional_fields</span>
@@ -464,11 +458,11 @@
         <span class="t-line blank"></span>
         <span class="t-line skill">  Changed files  (+400 / -0)</span>
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
-        <span class="t-line skill">  skills/pgm/jira-ticket-automator/</span>
-        <span class="t-line skill">    SKILL.md                    +246 / -0    <span style="color:#c84820;">← entry point</span></span>
-        <span class="t-line skill">    README.md                   +77  / -0    ← human-facing docs</span>
-        <span class="t-line skill">    references/</span>
-        <span class="t-line skill">      jira-field-mapping.md     +55  / -0    ← field reference</span>
+        <span class="t-line skill">  ---skills/pgm/jira-ticket-automator</span>
+        <span class="t-line skill">    |---- SKILL.md              +246 / -0    <span style="color:#c84820;">← entry point</span></span>
+        <span class="t-line skill">    |---- README.md             +77  / -0    ← human-facing docs</span>
+        <span class="t-line skill">    |---- references</span>
+        <span class="t-line skill">            |---- jira-field-mapping.md  +55 / -0  ← field reference</span>
         <span class="t-line skill">  INDEX.md                      +1   / -0    ← catalog pointer</span>
         <span class="t-line skill">  catalog.json                  +21  / -0    ← catalog entry</span>
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
@@ -483,7 +477,40 @@
         <span class="t-line skill">/   (_____/</span>
         <span class="t-line skill">/_____/   U</span>
         <span class="t-line blank"></span>
-        <span class="t-line section">── station 4 · risk ────────────────────────────────────────────</span>
+        <span class="t-line section">── station 4 · code tour ────────────────────────────────────────</span>
+        <span class="t-line skill">  Code tour</span>
+        <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
+        <span class="t-line skill">  ---skills/pgm/jira-ticket-automator</span>
+        <span class="t-line skill">    |---- SKILL.md</span>
+        <span class="t-line skill">    |       · ## Pre-phase — fetch PR metadata and diff</span>
+        <span class="t-line skill">    |       · ## Phase 1 — Socratic walkthrough (stations 1–6)</span>
+        <span class="t-line skill">    |       · ## Phase 2 — Automated quality checks</span>
+        <span class="t-line skill">    |---- references/jira-field-mapping.md</span>
+        <span class="t-line skill">            · ## Epic link field</span>
+        <span class="t-line skill">            · ## Issue type IDs</span>
+        <span class="t-line skill">            · ## Confluence writeback pattern</span>
+        <span class="t-line skill">  catalog.json</span>
+        <span class="t-line skill">    · name: string</span>
+        <span class="t-line skill">    · version: string</span>
+        <span class="t-line skill">    · path: string</span>
+        <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
+        <span class="t-line skill">    3 files · 9 signatures total</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  <strong>Does this give you a clear enough picture of the code structure?</strong></span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">     [1]  yes — move on to Station 5 · Risk     (default)</span>
+        <span class="t-line skill">     [2]  go deeper — walk me through the most interesting function</span>
+        <span class="t-line blank"></span>
+        <span class="t-line user"><span class="t-prefix">you ❯ </span>1</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line skill">  / \__</span>
+        <span class="t-line skill"> (    @\___</span>
+        <span class="t-line skill"> /         O</span>
+        <span class="t-line skill">/   (_____/</span>
+        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line blank"></span>
+        <span class="t-line section">── station 5 · risk ────────────────────────────────────────────</span>
         <span class="t-line skill">  <strong>If you had to name one thing that could go wrong with this PR in</strong></span>
         <span class="t-line skill">  <strong>production — an edge case, a race condition, a missing test, a</strong></span>
         <span class="t-line skill">  <strong>performance concern — what would it be?</strong></span>
@@ -508,7 +535,7 @@
         <span class="t-line skill">/   (_____/</span>
         <span class="t-line skill">/_____/   U</span>
         <span class="t-line blank"></span>
-        <span class="t-line section">── station 5 · ownership ───────────────────────────────────────</span>
+        <span class="t-line section">── station 6 · ownership ───────────────────────────────────────</span>
         <span class="t-line skill">  <strong>Could you explain this PR to a teammate right now, confidently?</strong></span>
         <span class="t-line skill">  <strong>What, if anything, are you still unsure about?</strong></span>
         <span class="t-line blank"></span>
@@ -525,36 +552,31 @@
         <span class="t-line skill">  running code-reviewer, silent-failure-hunter, pr-test-analyzer…</span>
         <span class="t-line skill">  context from walkthrough passed as anchor (your findings, decisions noted)</span>
         <span class="t-line blank"></span>
-        <span class="t-line critical">  [CRITICAL] catalog.json / INDEX.md — wrong name, path, version. run build-index.</span>
-        <span class="t-line critical">  [CRITICAL] Phase 3.7 writeback: no branch for missing "* US CORP:" line →</span>
-        <span class="t-line critical">             idempotency guard silently broken, duplicate US on re-run</span>
-        <span class="t-line critical">  [CRITICAL] "already linked" detection matches any [A-Z]+-[0-9]+ in prose →</span>
-        <span class="t-line critical">             silent false-positive skips entire issue creation</span>
-        <span class="t-line finding">  [HIGH]     jira-field-mapping.md conflicts with SKILL.md on 3 points</span>
-        <span class="t-line finding">  [HIGH]     hardcoded issuetype ID "5" applied to all projects without check</span>
-        <span class="t-line finding">  [HIGH]     jira_create_issue_link failure leaves US orphaned from epic silently</span>
-        <span class="t-line finding">  [GAP]      all 4 test-plan checkboxes unchecked; no catalog consistency test</span>
-        <span class="t-line blank"></span>
-
         <span class="t-line section">── comment posted to PR #74 ─────────────────────────────────────</span>
-        <span class="t-line skill">  synthesizes walkthrough conversation + automated checks ↓</span>
         <span class="t-line blank"></span>
-        <span class="t-line skill">  Goal: rename + upgrade jira-tickets-from-epic → jira-ticket-automator v0.5.0,</span>
+        <span class="t-line skill">  ## [MANUAL REVIEW]</span>
+        <span class="t-line skill">  Rename + upgrade jira-tickets-from-epic → jira-ticket-automator v0.5.0,</span>
         <span class="t-line skill">  baking in ACME-1158 learnings. Epic link via jira_create_issue_link because</span>
         <span class="t-line skill">  customfield_10091 is screen-restricted in BIGPROJECT — forced workaround.</span>
         <span class="t-line skill">  Main risk: writeback patches "* US CORP:" with no fallback — idempotency breaks.</span>
         <span class="t-line blank"></span>
-        <span class="t-line skill">  Automated: 3 CRITICALs (catalog broken, writeback silent fail, false-skip),</span>
-        <span class="t-line skill">  3 HIGHs (field-mapping conflicts, hardcoded ID, orphaned epic link), 1 GAP.</span>
+        <span class="t-line skill">  ## [AUTOMATED]</span>
+        <span class="t-line critical">  🔴 catalog.json has wrong name, path, version — run build-index before merge</span>
+        <span class="t-line critical">  🔴 writeback silently skips when "* US CORP:" line is absent — duplicate US on re-run</span>
+        <span class="t-line critical">  🔴 "already linked" check matches any Jira key in prose — silently skips issue creation</span>
+        <span class="t-line finding">  🟠 jira-field-mapping.md conflicts with SKILL.md on 3 points</span>
+        <span class="t-line finding">  🟠 issuetype ID "5" hardcoded — brittle across Jira instances</span>
+        <span class="t-line finding">  🟠 jira_create_issue_link failure leaves US orphaned from epic with no error logged</span>
+        <span class="t-line finding">  🟡 all 4 test-plan checkboxes unchecked; no catalog consistency test</span>
         <span class="t-line blank"></span>
-        <span class="t-line verdict">  Verdict: Request changes · 5 blockers before merge</span>
+        <span class="t-line verdict">  Verdict: Request changes · 3 blockers before merge</span>
 
       </div>
     </div>
   </div>
 
   <!-- ── stations ── -->
-  <h2>The 5 stations</h2>
+  <h2>The 6 stations</h2>
   <p>You answer first. Then the skill shows its reading.</p>
 
   <div class="stations">
@@ -582,12 +604,19 @@
     <div class="station">
       <div class="station-num">04</div>
       <div>
+        <div class="station-title">Code Tour</div>
+        <div class="station-q">Skill fetches function signatures across all changed files. Optionally go deeper — skill narrates the most changed function.</div>
+      </div>
+    </div>
+    <div class="station">
+      <div class="station-num">05</div>
+      <div>
         <div class="station-title">Risk</div>
         <div class="station-q">"What's the one thing that could go wrong here?"</div>
       </div>
     </div>
     <div class="station">
-      <div class="station-num">05</div>
+      <div class="station-num">06</div>
       <div>
         <div class="station-title">Ownership</div>
         <div class="station-q">"Could you explain this PR to a teammate? What are you still unsure about?"</div>
