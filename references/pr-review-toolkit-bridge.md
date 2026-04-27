@@ -41,8 +41,9 @@ A 3–5 sentence prose paragraph that captures the substance of the walkthrough 
 what the reviewer said, what surprised them, what concerns they voiced, what Claude observed,
 and how confident the reviewer felt by Station 5.
 
-This is also the seed for `## 1. [reviewer]` in the final comment — expand it there to
-4–7 sentences as a co-reviewer voice, not a conversation recap.
+This is the **only** input for `## [MANUAL REVIEW]` in the final comment — expand it there
+to 4–7 sentences as a co-reviewer voice, not a conversation recap. Agent findings stay out
+of this section; they belong under `## [AUTOMATED]`.
 
 Example:
 > "The reviewer correctly identified the auth middleware as the entry point but initially
@@ -75,6 +76,19 @@ Each agent receives both artifacts in its prompt.
 >
 > Reviewer's walkthrough context: `<narrative paragraph>`"
 
+## Inline mode (host runs the prompts itself)
+
+When `pr-review-toolkit` is not installed (e.g. the host is GitHub Copilot, or a Claude Code
+session without the toolkit registered), the same three prompts above are used by the host
+model directly — no sub-agent dispatch. Run them as three sequential analysis passes against
+the PR diff, each receiving both Phase 1 artifacts in the same shape. Merge the resulting
+findings into `## [AUTOMATED]` exactly as the parallel sub-agent path does. The output
+template is unchanged ([output-template-full.md](output-template-full.md)).
+
+Inline mode is a feature-parity fallback, not a degraded mode: the prompts and the merge
+rules are identical. The only difference is "three sub-agents in parallel" vs. "one host,
+three passes".
+
 ## Escalation rules
 
 Include in the combined comment (with walkthrough anchor):
@@ -93,8 +107,8 @@ Templates:
 - With automated findings: [output-template-full.md](output-template-full.md)
 - Walkthrough only: [output-template-walkthrough.md](output-template-walkthrough.md)
 
-Key rule: `## 1. [reviewer]` is always the primary voice. Automated findings are supporting
-evidence. The `# Summary` section is written from the walkthrough lens — agents contribute
-findings, but the verdict is Claude's as an informed co-reviewer.
+Key rule: `## [MANUAL REVIEW]` is always the primary voice. Automated findings are
+supporting evidence. The `# Summary` section is written from the walkthrough lens —
+agents contribute findings, but the verdict is the host's as an informed co-reviewer.
 
 Post via `gh pr comment <PR> --body '...'` — only after reviewer confirms.

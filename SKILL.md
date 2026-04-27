@@ -3,14 +3,15 @@ name: pr-buddy
 description: >
   Two-phase PR review companion. Phase 1: Socratic conversational walkthrough that builds
   the reviewer's mental model through guided questions — fighting cognitive debt by ensuring
-  comprehension before approval. Phase 2: hands off to pr-review-toolkit for automated
-  quality checks. Use when you want to actually understand a PR, not just rubber-stamp it.
+  comprehension before approval. Phase 2: automated quality checks via pr-review-toolkit
+  (Claude Code) or inline review (any host). Use when you want to actually understand a PR,
+  not just rubber-stamp it.
 license: MIT
 argument-hint: "<pr_number_or_branch_or_url>"
-compatibility: "Requires gh CLI. Phase 2 requires pr-review-toolkit installed."
+compatibility: "Requires gh CLI. Phase 2 prefers pr-review-toolkit (Claude Code); falls back to inline host review (e.g. GitHub Copilot)."
 metadata:
   author: kiss-skills
-  version: 0.5.0
+  version: 0.6.0
   tags: [code-review, pr, cognitive-debt, pairing, comprehension]
 ---
 
@@ -28,6 +29,17 @@ See [references/cognitive-debt.md](references/cognitive-debt.md) for background.
 
 ## Procedure
 
+### Skill intro (one-time greeting)
+
+Render the pixel-art dog + greeting line + divider exactly once, as the first visible output
+of the skill. See [references/terminal-colors.md](references/terminal-colors.md) §
+"Skill intro greeting" for the exact block.
+
+Do not re-render the mascot at any later point — not between stations, not at the
+Phase 2 handoff, not at the review complete block. The mascot is a one-time greeting.
+
+---
+
 ### Pre-phase (silent)
 
 Fetch the PR metadata and diff silently — output nothing until Station 1:
@@ -40,16 +52,23 @@ gh pr diff <PR>
 Build an internal mental model: goal, entry point, 2–3 interesting decisions, most plausible
 failure mode.
 
+Compute the **difficulty tier** from the metadata using the formula in
+[references/terminal-colors.md](references/terminal-colors.md) § "Difficulty line"
+(`score = additions + deletions + files_count * 30` → `easy` / `medium` / `hard` / `epic`).
+Store `difficulty`, `total_changes`, and `files_count` internally — they feed the Station 1
+header and the final Review Depth score.
+
 ---
 
-### Mascot transition
+### Station transition
 
-Before each station (1–5) and before Phase 2, emit the pixel-art dog + station divider as
-plain text (no code block).
-See [references/terminal-colors.md](references/terminal-colors.md) for the exact render format
-and all station divider labels.
+At the opening of every Station 1–6 and at the Phase 2 handoff, emit the station divider
+as plain text. **Do not emit the mascot** — that happens once at skill intro only.
 
-Emit only at station openings and the Phase 2 handoff — never mid-station.
+Immediately below every Station 1–6 divider, render the **cognitive debt meter** line —
+see [references/terminal-colors.md](references/terminal-colors.md) § "Cognitive debt meter"
+for the per-station values. The Phase 2 handoff divider does not carry a meter; the meter
+was already cleared at the review complete block.
 
 ---
 
@@ -66,7 +85,7 @@ See [references/terminal-colors.md](references/terminal-colors.md) for the exact
 
 ---
 
-### Phase 1 — Socratic Walkthrough (5 stations)
+### Phase 1 — Socratic Walkthrough (6 stations)
 
 At each station: ask → wait for response → reveal your reading (1–3 sentences, no spoilers).
 
@@ -82,10 +101,14 @@ Print the PR header before asking:
 ```
 PR #<number> — <title>
 Author: <author>  ·  <baseRef> ← <headRef>
+difficulty: <tier>  ·  +<additions> / -<deletions>  ·  <N> files
 
 <body>
 ─────────────────────────────────────────────────────
 ```
+
+See [references/terminal-colors.md](references/terminal-colors.md) § "Difficulty line"
+for the tier formula.
 
 Ask: _"Based on the title and description, what problem do you think this PR is solving?
 What's the outcome the author was aiming for?"_
@@ -96,7 +119,7 @@ Reveal: confirm, correct, or sharpen. State the goal in one sentence.
 
 **Station 2 — Architecture** · divider: `── station 2 · architecture`
 
-Auto-render the change tree immediately after the mascot transition (no trigger needed).
+Auto-render the change tree immediately after the station divider + meter (no trigger needed).
 
 Ask: _"Which file is the entry point? Walk me through your mental model — how do these changes
 fit together?"_
@@ -125,7 +148,7 @@ makes a decision worth discussing.
 
 **Station 4 — Code Tour** · divider: `── station 4 · code tour`
 
-This station always runs. Emit the Station 4 mascot + divider, then fetch and render
+This station always runs. Emit the Station 4 divider + meter, then fetch and render
 function signatures for every main file in the walkthrough tracker.
 
 **Fetching file content:**
@@ -224,21 +247,27 @@ are you still unsure about?"_
 **Do not proceed to Phase 2 until the reviewer confirms they feel ready.** If uncertain,
 offer to revisit the relevant station or re-read a specific section of the diff.
 
+Once confirmed, render the **Review complete block**: debt meter at `0% cleared` plus the
+Review Depth score and flavor tags.
+See [references/terminal-colors.md](references/terminal-colors.md) § "Review complete block"
+for the exact format and the score computation rules.
+
+The Review Depth score is **reviewer-facing only** — never include it in the final PR
+comment or in any output bound for the PR author/team.
+
 ---
 
 ### Phase 2 — Automated Quality Checks
 
-#### 2a — Check toolkit availability
+#### 2a — Detect toolkit availability
 
-If `pr-review-toolkit` is not installed:
+`pr-review-toolkit` is **available** when the host is Claude Code AND the toolkit is
+registered (i.e. you can dispatch `pr-review-toolkit:code-reviewer`,
+`pr-review-toolkit:silent-failure-hunter`, and `pr-review-toolkit:pr-test-analyzer` as
+sub-agents). Otherwise it is **unavailable** — for example on GitHub Copilot or in a Claude
+Code session where the toolkit was never installed.
 
-> "Phase 2 requires `pr-review-toolkit`. Install it with:
-> ```
-> claude skill add manuartero/pr-review-toolkit
-> ```
-> Then re-run `/pr-buddy <PR>` to continue."
-
-Do not proceed until it's available or the reviewer explicitly skips Phase 2.
+This is a branch, not a block. Phase 2 always proceeds.
 
 #### 2b — Build Phase 1 context (two artifacts, internal — never shown)
 
@@ -255,7 +284,8 @@ PHASE_1_CONTEXT:
 
 **Artifact 2 — Reviewer narrative:** 3–5 prose sentences synthesizing the walkthrough
 (what the reviewer said, what surprised them, concerns voiced, what Claude observed,
-confidence level). This is also the seed for `## [MANUAL REVIEW]` in the final comment.
+confidence level). This is the **only** input for `## [MANUAL REVIEW]` in the final
+comment — agent findings stay out of that section.
 
 See [references/pr-review-toolkit-bridge.md](references/pr-review-toolkit-bridge.md) for
 the narrative format and an example.
@@ -264,41 +294,67 @@ the narrative format and an example.
 
 Ask: _"How would you like to proceed?"_
 
+**When `pr-review-toolkit` is available:**
+
 ```
-  [1]  full review   — code-reviewer · silent-failure-hunter · pr-test-analyzer
-  [2]  code only     — code-reviewer
-  [3]  stop here     — finalize with walkthrough findings only
+  [1]  full review    — code-reviewer · silent-failure-hunter · pr-test-analyzer  (toolkit, parallel)
+  [2]  code only      — code-reviewer                                              (toolkit)
+  [3]  inline review  — host model runs the same three prompts, no toolkit needed
+  [4]  stop here      — finalize with walkthrough findings only
 ```
+
+**When `pr-review-toolkit` is unavailable** (Copilot, or Claude Code without the toolkit):
+
+```
+  [1]  inline review  — host model runs the three review prompts against the diff
+  [2]  stop here      — finalize with walkthrough findings only
+```
+
+Renumber the inline / stop-here options to `[1]` / `[2]` when the toolkit is unavailable
+so the menu is always contiguous.
 
 Branch on selection:
 
-**[1] Full review** — run all three sub-agents **in parallel**, each receiving the diff and
-both Phase 1 artifacts. See [references/pr-review-toolkit-bridge.md](references/pr-review-toolkit-bridge.md)
-for the exact prompt templates, escalation rules, and framing patterns.
+**Full review (toolkit)** — run all three sub-agents **in parallel**, each receiving the
+diff and both Phase 1 artifacts.
+See [references/pr-review-toolkit-bridge.md](references/pr-review-toolkit-bridge.md) for
+the exact prompt templates, escalation rules, and framing patterns.
 Template: [references/output-template-full.md](references/output-template-full.md)
 
-**[2] Code only** — run `pr-review-toolkit:code-reviewer` only (same prompt). Final comment
-includes only `### 2.1. [code-reviewer]`; omit 2.2 and 2.3.
-Template: [references/output-template-full.md](references/output-template-full.md) (adapted)
+**Code only (toolkit)** — run `pr-review-toolkit:code-reviewer` only (same prompt). Final
+comment's `## [AUTOMATED]` includes only those findings.
+Template: [references/output-template-full.md](references/output-template-full.md)
 
-**[3] Stop here** — skip agents; go directly to Final Summary.
+**Inline review (host-driven)** — the host model runs the three prompts itself as three
+sequential analysis passes against the diff, each prompt receiving both Phase 1 artifacts.
+This is a feature-parity fallback: same prompts, same merge rules, no toolkit needed.
+See [references/pr-review-toolkit-bridge.md](references/pr-review-toolkit-bridge.md) §
+"Inline mode" for details.
+Template: [references/output-template-full.md](references/output-template-full.md)
+
+**Stop here** — skip review; go directly to Final Summary.
 Template: [references/output-template-walkthrough.md](references/output-template-walkthrough.md)
 
-Before launching agents ([1] or [2]) announce:
-> "Now running **pr-review-toolkit** — with the full walkthrough context injected."
+Before launching review (any non-stop option) announce:
+> "Now running automated checks — with the full walkthrough context injected."
 
-Wait for all agents to complete before synthesizing.
+Wait for all passes/agents to complete before synthesizing.
 
 ---
 
 ### Final Summary
 
-Synthesize Phase 1 artifacts and agent findings into a ready-to-post PR comment.
+Compose the comment in two passes, in this order, to keep the sections cleanly separated:
 
-**The walkthrough is the primary voice.** `## [MANUAL REVIEW]` is always the fullest section —
-4–7 sentences as an informed co-reviewer. Agent findings are supporting evidence and appear
-compressed under `## [AUTOMATED]`. The `# Summary` (Blocking / Requests / Nice to Have) is
-written from the walkthrough lens.
+1. **`## [MANUAL REVIEW]` first — using only Phase 1 artifacts** (the structured block
+   and the reviewer narrative). Do not reference, paraphrase, summarize, or anchor to
+   any agent finding here. This is the reviewer's voice — 4–7 sentences as an informed
+   co-reviewer.
+2. **`## [AUTOMATED]` second — using only the sub-agent / inline-review output.**
+   Compress each finding to one colloquial line with a severity emoji
+   (🔴 / 🟠 / 🟡). No verbatim agent output, no per-agent sub-headings.
+3. **`# Summary` last** — Blocking / Requests / Nice to Have — drawing from both
+   sections, written from the walkthrough lens.
 
 Then ask: _"Want me to post this? I'll run `gh pr comment <PR> --body '...'`"_
 
@@ -310,11 +366,12 @@ Only post on explicit confirmation.
 
 | Element | Rule |
 |---------|------|
-| Mascot + dividers | Plain text — see [terminal-colors.md](references/terminal-colors.md) |
+| Skill intro greeting | Plain text, once at load — see [terminal-colors.md](references/terminal-colors.md) |
+| Station divider + meter | Plain text, every station opening — see [terminal-colors.md](references/terminal-colors.md) |
+| Difficulty line | Plain text, Station 1 header — see [terminal-colors.md](references/terminal-colors.md) |
 | Change tree | Plain text — see [terminal-colors.md](references/terminal-colors.md) |
 | File tracker | Plain text — see [terminal-colors.md](references/terminal-colors.md) |
 | Questions | `▶` separator — see [terminal-colors.md](references/terminal-colors.md) |
 | Station reveals | 1–3 sentences, plain prose, cite diff lines when relevant |
-| Final comment | Fenced markdown block, structure per output template above |
-
-See [assets/example-session.md](assets/example-session.md) for a full annotated example.
+| Review complete block | Plain text, once after Station 6 — see [terminal-colors.md](references/terminal-colors.md) |
+| Final comment | Fenced markdown block, structure per output template above (never includes Review Depth score) |

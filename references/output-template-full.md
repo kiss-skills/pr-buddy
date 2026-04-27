@@ -4,6 +4,9 @@ Use when Phase 2 ran at least one agent (menu options [1] or [2]).
 
 Use `<placeholder>` tokens — replace with actual walkthrough content when synthesizing.
 
+> **Note:** the Review Depth score does NOT appear in this template — it is
+> reviewer-facing only. Never include it in the posted PR comment.
+
 ```markdown
 # Understanding `[walkthrough + automated checks]`
 - **Goal:** <one-sentence goal agreed in Station 1>
@@ -15,7 +18,13 @@ Use `<placeholder>` tokens — replace with actual walkthrough content when synt
 ## [MANUAL REVIEW]
 
 <Narrative synthesis of the full walkthrough. This is the primary review voice — write 4–7
-sentences as an informed co-reviewer, not as a summary of the conversation. Include:>
+sentences as an informed co-reviewer, not as a summary of the conversation.
+
+Sources: only Phase 1 artifacts (structured block + reviewer narrative). Do **not**
+include, paraphrase, or anchor to agent findings here — those belong under
+`## [AUTOMATED]` only.
+
+Include:>
 
 - What this PR is actually doing and why (beyond the title)
 - The code path traced: entry point → call flow → key interactions

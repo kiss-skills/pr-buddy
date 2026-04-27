@@ -4,6 +4,9 @@ Use when the reviewer selected option [3] (skip agents) from the Phase 2 menu.
 
 Use `<placeholder>` tokens — replace with actual walkthrough content when synthesizing.
 
+> **Note:** the Review Depth score does NOT appear in this template — it is
+> reviewer-facing only. Never include it in the posted PR comment.
+
 ```markdown
 # Understanding `[walkthrough]`
 - **Goal:** <one-sentence goal agreed in Station 1>

@@ -304,7 +304,7 @@
 
   <!-- ── hero ── -->
   <div class="header">
-    <h1><code>/pr-buddy</code> <span style="font-size:1.1rem; font-weight:400; color:var(--fg-muted);">@0.5.0</span></h1>
+    <h1><code>/pr-buddy</code> <span style="font-size:1.1rem; font-weight:400; color:var(--fg-muted);">@0.6.0</span></h1>
     <p class="tagline">Understand the PR before you approve it.</p>
     <div class="cta-row">
       <a class="btn primary" href="#install">Install</a>
@@ -326,15 +326,20 @@
   <h2>Solution</h2>
   <p>
     <code>/pr-buddy &lt;pr&gt;</code> walks you through a PR in 6 stations; <strong>you</strong> answer first, then the skill shows its reading.<br>
-    Once you can explain the PR confidently, it <code>runs pr-review-toolkit</code> <strong>anchored to what you did discover</strong>.
+    Once you can explain the PR confidently, it runs automated checks (<code>pr-review-toolkit</code> on Claude Code, inline review on Copilot) <strong>anchored to what you did discover</strong>.
   </p>
   <blockquote style="border-left: 2px solid var(--border); margin: 1rem 0 0; padding: 0.4rem 1rem; color: var(--fg-muted); font-size: 0.9rem;">
     The output is a combined PR comment <strong style="color: var(--fg);">that's yours</strong> to post.
   </blockquote>
+  <p style="font-size: 0.82rem; color: var(--fg-muted); margin-top: 1rem;">
+    <strong style="color: var(--fg);">new in 0.6.0</strong> — works on GitHub Copilot (manual install via <code>AGENTS.md</code>); Phase 2 falls back to inline host review when <code>pr-review-toolkit</code> is unavailable; the final PR comment now keeps human and automated sections strictly separated.
+  </p>
   <p style="display:none"></p>
 
   <!-- ── install ── -->
   <h2 id="install">Install</h2>
+
+  <h3 style="margin-top:1.2rem;">Claude Code</h3>
   <div class="copy-block">
     <pre><code>claude skill add kiss-skills/pr-buddy</code></pre>
     <button class="copy-btn" onclick="
@@ -344,7 +349,26 @@
       setTimeout(() => { this.textContent = 'copy'; this.classList.remove('copied'); }, 2000);
     ">copy</button>
   </div>
-  <p>Requirements: <code>gh</code> CLI (authenticated) · <code>pr-review-toolkit</code> for Phase 2</p>
+
+  <h3 style="margin-top:1.6rem;">GitHub Copilot</h3>
+  <p style="margin-top:0.4rem;">Copilot has no plugin marketplace, so install is manual — clone once, then point Copilot at <code>SKILL.md</code> via <code>AGENTS.md</code> (or <code>.github/copilot-instructions.md</code>):</p>
+  <div class="copy-block">
+    <pre><code>git clone https://github.com/kiss-skills/pr-buddy.git ~/.kiss-skills/pr-buddy</code></pre>
+    <button class="copy-btn" onclick="
+      navigator.clipboard.writeText('git clone https://github.com/kiss-skills/pr-buddy.git ~/.kiss-skills/pr-buddy');
+      this.textContent = 'copied';
+      this.classList.add('copied');
+      setTimeout(() => { this.textContent = 'copy'; this.classList.remove('copied'); }, 2000);
+    ">copy</button>
+  </div>
+  <p style="margin-top:0.6rem;">Then add to <code>AGENTS.md</code>:</p>
+  <pre style="background:var(--bg-elev); padding:0.8rem; border-radius:6px; font-size:0.82rem; overflow-x:auto;"><code>## /pr-buddy
+When the user types `/pr-buddy &lt;PR&gt;`, follow the procedure in
+`~/.kiss-skills/pr-buddy/SKILL.md`. Phase 1 is a Socratic walkthrough.
+Phase 2 falls back to inline review when `pr-review-toolkit` sub-agents
+are unavailable — see Phase 2 in SKILL.md.</code></pre>
+
+  <p style="margin-top:1rem;">Requirements: <code>gh</code> CLI (authenticated). <code>pr-review-toolkit</code> is <em>optional</em> — when present (Claude Code), Phase 2 dispatches three sub-agents in parallel; when absent, Phase 2 falls back to inline host review with feature parity.</p>
 
   <!-- ── actual session ── -->
   <h2>Actual session</h2>
@@ -360,10 +384,6 @@
 
         <span class="t-line user"><span class="t-prefix">you ❯ </span>/pr-buddy 74</span>
         <span class="t-line blank"></span>
-        <span class="t-line skill">  fetching PR #74 and diff… (silent pre-phase)</span>
-        <span class="t-line skill">  identified entry point: skills/pgm/jira-ticket-automator/SKILL.md</span>
-        <span class="t-line skill">  risk flag: catalog.json and INDEX.md look hand-edited</span>
-        <span class="t-line blank"></span>
 
         <span class="t-line skill">  / \__</span>
         <span class="t-line skill"> (    @\___</span>
@@ -371,7 +391,23 @@
         <span class="t-line skill">/   (_____/</span>
         <span class="t-line skill">/_____/   U</span>
         <span class="t-line blank"></span>
+        <span class="t-line skill">           pr-buddy · let's walk through this one</span>
+        <span class="t-line blank"></span>
+        <span class="t-line section">─────────────────────────────────────────────────────────────────</span>
+        <span class="t-line blank"></span>
+
+        <span class="t-line skill">  fetching PR #74 and diff… (silent pre-phase)</span>
+        <span class="t-line skill">  identified entry point: skills/pgm/jira-ticket-automator/SKILL.md</span>
+        <span class="t-line skill">  risk flag: catalog.json and INDEX.md look hand-edited</span>
+        <span class="t-line blank"></span>
+
         <span class="t-line section">── station 1 · goal ────────────────────────────────────────────</span>
+        <span class="t-line skill">  cognitive debt  ████████████  100%  unreviewed</span>
+        <span class="t-line blank"></span>
+        <span class="t-line skill">  PR #74 — feat(skill): jira-ticket-automator v0.5.0</span>
+        <span class="t-line skill">  Author: @op  ·  main ← feat/jira-ticket-automator</span>
+        <span class="t-line skill">  difficulty: hard  ·  +400 / -0  ·  5 files</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  <strong>Based on the title and description, what problem do you think this PR</strong></span>
         <span class="t-line skill">  <strong>is solving? What's the outcome the author was aiming for?</strong></span>
         <span class="t-line blank"></span>
@@ -385,13 +421,9 @@
         <span class="t-line skill">  a real run against ACME-1158 — the "happy path" became the spec.</span>
         <span class="t-line blank"></span>
 
-        <span class="t-line skill">  / \__</span>
-        <span class="t-line skill"> (    @\___</span>
-        <span class="t-line skill"> /         O</span>
-        <span class="t-line skill">/   (_____/</span>
-        <span class="t-line skill">/_____/   U</span>
-        <span class="t-line blank"></span>
         <span class="t-line section">── station 2 · architecture ────────────────────────────────────</span>
+        <span class="t-line skill">  cognitive debt  ██████████░░   83%  goal discussed</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  Changed files  (+400 / -0)</span>
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
         <span class="t-line skill">  ---skills/pgm/jira-ticket-automator</span>
@@ -421,13 +453,9 @@
         <span class="t-line skill">    [ ] INDEX.md / catalog.json    — registry</span>
         <span class="t-line blank"></span>
 
-        <span class="t-line skill">  / \__</span>
-        <span class="t-line skill"> (    @\___</span>
-        <span class="t-line skill"> /         O</span>
-        <span class="t-line skill">/   (_____/</span>
-        <span class="t-line skill">/_____/   U</span>
-        <span class="t-line blank"></span>
         <span class="t-line section">── station 3 · decisions ───────────────────────────────────────</span>
+        <span class="t-line skill">  cognitive debt  ████████░░░░   66%  architecture mapped</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  Three notable choices in the diff:</span>
         <span class="t-line skill">  1. In SKILL.md: epic link via jira_create_issue_link, not customfield_10091</span>
         <span class="t-line skill">  2. In SKILL.md: issuetype ID "5" hardcoded in additional_fields</span>
@@ -471,13 +499,9 @@
         <span class="t-line user"><span class="t-prefix">you ❯ </span>yes</span>
         <span class="t-line blank"></span>
 
-        <span class="t-line skill">  / \__</span>
-        <span class="t-line skill"> (    @\___</span>
-        <span class="t-line skill"> /         O</span>
-        <span class="t-line skill">/   (_____/</span>
-        <span class="t-line skill">/_____/   U</span>
-        <span class="t-line blank"></span>
         <span class="t-line section">── station 4 · code tour ────────────────────────────────────────</span>
+        <span class="t-line skill">  cognitive debt  ██████░░░░░░   50%  decisions probed</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  Code tour</span>
         <span class="t-line skill">  ────────────────────────────────────────────────────────</span>
         <span class="t-line skill">  ---skills/pgm/jira-ticket-automator</span>
@@ -504,13 +528,9 @@
         <span class="t-line user"><span class="t-prefix">you ❯ </span>1</span>
         <span class="t-line blank"></span>
 
-        <span class="t-line skill">  / \__</span>
-        <span class="t-line skill"> (    @\___</span>
-        <span class="t-line skill"> /         O</span>
-        <span class="t-line skill">/   (_____/</span>
-        <span class="t-line skill">/_____/   U</span>
-        <span class="t-line blank"></span>
         <span class="t-line section">── station 5 · risk ────────────────────────────────────────────</span>
+        <span class="t-line skill">  cognitive debt  ████░░░░░░░░   33%  code tour done</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  <strong>If you had to name one thing that could go wrong with this PR in</strong></span>
         <span class="t-line skill">  <strong>production — an edge case, a race condition, a missing test, a</strong></span>
         <span class="t-line skill">  <strong>performance concern — what would it be?</strong></span>
@@ -529,25 +549,22 @@
         <span class="t-line skill">  hand-edited instead of running npm --prefix tools run build-index.</span>
         <span class="t-line blank"></span>
 
-        <span class="t-line skill">  / \__</span>
-        <span class="t-line skill"> (    @\___</span>
-        <span class="t-line skill"> /         O</span>
-        <span class="t-line skill">/   (_____/</span>
-        <span class="t-line skill">/_____/   U</span>
-        <span class="t-line blank"></span>
         <span class="t-line section">── station 6 · ownership ───────────────────────────────────────</span>
+        <span class="t-line skill">  cognitive debt  ██░░░░░░░░░░   17%  risk identified</span>
+        <span class="t-line blank"></span>
         <span class="t-line skill">  <strong>Could you explain this PR to a teammate right now, confidently?</strong></span>
         <span class="t-line skill">  <strong>What, if anything, are you still unsure about?</strong></span>
         <span class="t-line blank"></span>
         <span class="t-line user"><span class="t-prefix">you ❯ </span>yes. next step</span>
         <span class="t-line blank"></span>
 
-        <span class="t-line skill">  / \__</span>
-        <span class="t-line skill"> (    @\___</span>
-        <span class="t-line skill"> /         O</span>
-        <span class="t-line skill">/   (_____/</span>
-        <span class="t-line skill">/_____/   U</span>
+        <span class="t-line section">── review complete ─────────────────────────────────────────────</span>
         <span class="t-line blank"></span>
+        <span class="t-line skill">  cognitive debt  ░░░░░░░░░░░░    0%  cleared</span>
+        <span class="t-line blank"></span>
+        <span class="t-line verdict">  Review Depth  8/10  ·  hard PR · substantive · tree checked</span>
+        <span class="t-line blank"></span>
+
         <span class="t-line section">── phase 2 · automated checks (3 agents, parallel) ─────────────</span>
         <span class="t-line skill">  running code-reviewer, silent-failure-hunter, pr-test-analyzer…</span>
         <span class="t-line skill">  context from walkthrough passed as anchor (your findings, decisions noted)</span>
